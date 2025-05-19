@@ -11,7 +11,7 @@ namespace leverx.Controllers
         {
             new Tournament
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "World Chess Championship 2024",
                 StartDate = new DateTime(2024, 4, 1),
                 EndDate = new DateTime(2024, 4, 30),
@@ -20,7 +20,7 @@ namespace leverx.Controllers
             },
             new Tournament
             {
-                Id = 2,
+                Id = Guid.NewGuid(),
                 Name = "Candidates Tournament 2023",
                 StartDate = new DateTime(2023, 6, 5),
                 EndDate = new DateTime(2023, 6, 25),
@@ -29,7 +29,7 @@ namespace leverx.Controllers
             },
             new Tournament
             {
-                Id = 3,
+                Id = Guid.NewGuid(),
                 Name = "Tata Steel Chess 2024",
                 StartDate = new DateTime(2024, 1, 13),
                 EndDate = new DateTime(2024, 1, 28),
@@ -38,7 +38,7 @@ namespace leverx.Controllers
             },
             new Tournament
             {
-                Id = 4,
+                Id = Guid.NewGuid(),
                 Name = "Grand Chess Tour Romania",
                 StartDate = new DateTime(2024, 5, 9),
                 EndDate = new DateTime(2024, 5, 19),
@@ -47,7 +47,7 @@ namespace leverx.Controllers
             },
             new Tournament
             {
-                Id = 5,
+                Id = Guid.NewGuid(),
                 Name = "Sinquefield Cup 2023",
                 StartDate = new DateTime(2023, 8, 15),
                 EndDate = new DateTime(2023, 8, 29),
@@ -72,7 +72,7 @@ namespace leverx.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<Tournament> GetTournament(int id)
+        public ActionResult<Tournament> GetTournament(Guid id)
         {
             var tournament = Tournaments.FirstOrDefault(t => t.Id == id);
             if (tournament == null)
@@ -90,7 +90,7 @@ namespace leverx.Controllers
         [HttpPost]
         public ActionResult<Tournament> CreateTournament(Tournament tournament)
         {
-            tournament.Id = Tournaments.Max(t => t.Id) + 1;
+            tournament.Id = Guid.NewGuid();
             tournament.Players = new List<Player>();
             Tournaments.Add(tournament);
             return CreatedAtAction(nameof(GetTournament), new { id = tournament.Id }, tournament);
@@ -103,7 +103,7 @@ namespace leverx.Controllers
         /// <param name="updatedTournament"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult UpdateTournament(int id, Tournament updatedTournament)
+        public ActionResult UpdateTournament(Guid id, Tournament updatedTournament)
         {
             var tournament = Tournaments.FirstOrDefault(t => t.Id == id);
             if (tournament == null)
@@ -123,7 +123,7 @@ namespace leverx.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult DeleteTournament(int id)
+        public ActionResult DeleteTournament(Guid id)
         {
             var tournament = Tournaments.FirstOrDefault(t => t.Id == id);
             if(tournament == null)
