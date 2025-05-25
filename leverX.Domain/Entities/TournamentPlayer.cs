@@ -7,7 +7,7 @@
 
         public Tournament Tournament { get; set; }
         public Player Player { get; set; }
-        public int? FinalRank { get; set; }
-        public float? Score { get; set; }
+        public int FinalRank { get; set; }
+        public float Score { get; set; }
     }
 }
