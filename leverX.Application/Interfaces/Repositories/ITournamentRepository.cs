@@ -2,7 +2,9 @@
 
 namespace leverX.Application.Interfaces.Repositories
 {
-    public interface IOpeningRepository : ICrudRepository<Opening>
+    public interface ITournamentRepository : ICrudRepository<Tournament>
     {
+
     }
+
 }
