@@ -1,4 +1,4 @@
-﻿namespace leverX.Models
+﻿namespace leverX.Domain.Entities
 {
     public class Opening
     {

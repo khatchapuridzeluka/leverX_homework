@@ -1,5 +1,5 @@
-﻿using leverX.Models;
-using leverX.Models.Enums;
+﻿using leverX.Domain.Entities;
+using leverX.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverX.Controllers

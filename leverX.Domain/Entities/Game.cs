@@ -1,6 +1,6 @@
-﻿using leverX.Models.Enums;
+﻿using leverX.Domain.Enums;
 
-namespace leverX.Models
+namespace leverX.Domain.Entities
 {
     public class Game
     {

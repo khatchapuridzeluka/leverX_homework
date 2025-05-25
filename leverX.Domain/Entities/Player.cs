@@ -1,6 +1,6 @@
-﻿using leverX.Models.Enums;
+﻿using leverX.Domain.Enums;
 
-namespace leverX.Models
+namespace leverX.Domain.Entities
 {
     public class Player
     {
@@ -14,7 +14,8 @@ namespace leverX.Models
         public int FideRating { get; set; }
 
         public Title Title { get; set; } // GM, IM, FM, etc.
-        public ICollection<Game> GamesAsWhite { get; set; } = new List<Game>(); 
+        public ICollection<Game> GamesAsWhite { get; set; } = new List<Game>();
         public ICollection<Game> GamesAsBlack { get; set; } = new List<Game>();
+        public ICollection<Tournament> Tournaments { get; set; } = new List<Tournament>();
     }
 }

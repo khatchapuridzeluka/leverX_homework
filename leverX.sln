@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "leverX", "leverX\leverX.csproj", "{675202B8-C318-4679-973B-2C7AFEF5207F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "leverX.Domain", "leverX.Domain\leverX.Domain.csproj", "{90B5BD82-E06B-47FA-A1B7-D8187657DF57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "leverX.Application", "leverX.Application\leverX.Application.csproj", "{B3E2B4FE-E095-49CF-A1A6-F18CE25C013F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "leverX.Infrastructure", "leverX.Infrastructure\leverX.Infrastructure.csproj", "{D0DE40A0-7256-4B85-B270-D0487DDA3B25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{675202B8-C318-4679-973B-2C7AFEF5207F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{675202B8-C318-4679-973B-2C7AFEF5207F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{675202B8-C318-4679-973B-2C7AFEF5207F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90B5BD82-E06B-47FA-A1B7-D8187657DF57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90B5BD82-E06B-47FA-A1B7-D8187657DF57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90B5BD82-E06B-47FA-A1B7-D8187657DF57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90B5BD82-E06B-47FA-A1B7-D8187657DF57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3E2B4FE-E095-49CF-A1A6-F18CE25C013F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3E2B4FE-E095-49CF-A1A6-F18CE25C013F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3E2B4FE-E095-49CF-A1A6-F18CE25C013F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3E2B4FE-E095-49CF-A1A6-F18CE25C013F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0DE40A0-7256-4B85-B270-D0487DDA3B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0DE40A0-7256-4B85-B270-D0487DDA3B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0DE40A0-7256-4B85-B270-D0487DDA3B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0DE40A0-7256-4B85-B270-D0487DDA3B25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
