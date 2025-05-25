@@ -14,7 +14,7 @@ namespace leverX.Application.Services
             _playerRepository = playerRepository;
         }
 
-        public async Task<PlayerDto> CreateAsync(PlayerDto dto)
+        public async Task<PlayerDto> CreateAsync(CreatePlayerDto dto)
         {
             var player = new Player
             {

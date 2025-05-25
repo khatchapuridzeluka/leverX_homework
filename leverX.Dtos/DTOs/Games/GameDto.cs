@@ -18,6 +18,6 @@ namespace leverX.DTOs.Games
 
         public DateTime PlayedOn { get; set; }
 
-        public string OpeningName { get; set; }
+        public Guid OpeningId { get; set; }
     }
 }

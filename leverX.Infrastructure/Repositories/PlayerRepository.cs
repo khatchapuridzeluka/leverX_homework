@@ -1,4 +1,5 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using System.Security.Cryptography.X509Certificates;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
 namespace leverX.Infrastructure.Repositories
 {
@@ -7,7 +8,7 @@ namespace leverX.Infrastructure.Repositories
         private readonly List<Player> _players = new(); 
 
         public Task AddAsync(Player player)
-        {
+        {   
             _players.Add(player);
             return Task.CompletedTask;
         }
