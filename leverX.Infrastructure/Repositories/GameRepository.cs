@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using leverX.Application.Interfaces.Repositories;
+﻿using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
 
 namespace leverX.Infrastructure.Repositories
