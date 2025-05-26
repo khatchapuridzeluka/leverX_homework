@@ -1,4 +1,5 @@
-﻿using leverX.Models;
+﻿using leverX.Application.Interfaces.Services;
+using leverX.DTOs.Openings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverX.Controllers
@@ -7,37 +8,33 @@ namespace leverX.Controllers
     [Route("api/[controller]")]
     public class OpeningsController : ControllerBase
     {
-        private static List<Opening> Openings = new List<Opening>
+        private readonly IOpeningService _openingService;
+
+        public OpeningsController(IOpeningService openingService)
         {
-            new Opening { Id = Guid.NewGuid(),Name = "Ruy Lopez", EcoCode = "C60", Moves = new List<string> { "e4", "e5", "Nf3", "Nc6", "Bb5" } },
-            new Opening { Id = Guid.NewGuid(), Name = "Queen's Gambit Declined", EcoCode = "D30", Moves = new List<string> { "d4", "d5", "c4", "e6", "Nc3", "Nf6" } },
-            new Opening { Id = Guid.NewGuid(), Name = "Sicilian Defense", EcoCode = "B20", Moves = new List<string> { "e4", "c5" } },
-            new Opening { Id = Guid.NewGuid(), Name = "Italian Game", EcoCode = "C50", Moves = new List<string> { "e4", "e5", "Nf3", "Nc6", "Bc4" } },
-            new Opening { Id = Guid.NewGuid(), Name = "King's Indian Defense", EcoCode = "E60", Moves = new List<string> { "d4", "Nf6", "c4", "g6", "Nc3", "Bg7" } },
-            new Opening { Id = Guid.NewGuid(), Name = "French Defense: Winawer", EcoCode = "C15",Moves = new List<string> { "e4", "e6", "d4", "d5", "Nc3", "Bb4" }},
-            new Opening { Id = Guid.NewGuid(), Name = "Slav Defense", EcoCode = "D10",  Moves = new List<string> { "d4", "d5", "c4", "c6", "Nc3", "Nf6" } },
-            new Opening { Id = Guid.NewGuid(), Name = "Scotch Game", EcoCode = "C45", Moves = new List<string> { "e4", "e5", "Nf3", "Nc6", "d4", "exd4" }}
-        };
+            _openingService = openingService;
+        }
 
         /// <summary>
         /// Get all openings
         /// </summary>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(IEnumerable<OpeningDto>), 200)]
         [HttpGet]
-        public ActionResult<IEnumerable<Opening>> GetOpenings()
+        public async Task<ActionResult<IEnumerable<OpeningDto>>> GetOpenings()
         {
-            return Ok(Openings);
+            var openings = await _openingService.GetAllAsync();
+            return Ok(openings);
         }
 
         /// <summary>
         /// Get Opening by Id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(OpeningDto), 200)]
+        [ProducesResponseType(404)]
         [HttpGet("{id}")]
-        public ActionResult<Opening> GetOpening(Guid id)
+        public async Task<ActionResult<OpeningDto>> GetOpening(Guid id)
         {
-            var opening = Openings.FirstOrDefault(o => o.Id == id);
+            var opening = await _openingService.GetByIdAsync(id);
             if (opening == null)
             {
                 return NotFound();
@@ -48,50 +45,33 @@ namespace leverX.Controllers
         /// <summary>
         /// Create a new opening
         /// </summary>
-        /// <param name="opening"></param>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(OpeningDto),201)]
         [HttpPost]
-        public ActionResult<Opening> CreateOpening(Opening opening)
+        public async Task<ActionResult<OpeningDto>> CreateOpening(CreateOpeningDto dto)
         {
-            opening.Id = Guid.NewGuid();
-            Openings.Add(opening);
-            return CreatedAtAction(nameof(GetOpening), new { id = opening.Id }, opening);
+            var createdOpening = await _openingService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetOpening), new { id = createdOpening.Id }, createdOpening);
         }
 
         /// <summary>
         /// Update the opening
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="updatedOpening"></param>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(UpdateOpeningDto), 204)]
         [HttpPut("{id}")]
-        public ActionResult UpdateOpening(Guid id, Opening updatedOpening)
+        public async Task<ActionResult> UpdateOpening(Guid id, UpdateOpeningDto dto)
         {
-            var opening = Openings.FirstOrDefault(o => o.Id == id);
-            if (opening == null)
-            {
-                return NotFound();
-            }
-            opening.Name = updatedOpening.Name;
-            opening.EcoCode = updatedOpening.EcoCode;
-            opening.Moves = updatedOpening.Moves;
+            await _openingService.UpdateAsync(id, dto);
             return NoContent();
         }
 
         /// <summary>
         /// Delete the opening
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        [ProducesResponseType(204)]
         [HttpDelete("{id}")]
-        public ActionResult DeleteOpening(Guid id)
+        public async Task<ActionResult> DeleteOpening(Guid id)
         {
-            var opening = Openings.FirstOrDefault(o => o.Id == id);
-            if (opening == null)
-            {
-                return NotFound();
-            }
-            Openings.Remove(opening);
+            await _openingService.DeleteAsync(id);
             return NoContent();
         }
     }

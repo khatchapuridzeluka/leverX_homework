@@ -3,6 +3,6 @@ namespace leverX.Application.Interfaces.Services
 {
     public interface IPlayerService : ICrudService<PlayerDto, CreatePlayerDto, UpdatePlayerDto>
     {
-        Task<List<PlayerDto>> GetByRating(int rating);
+        Task<List<PlayerDto>> GetByRatingAsync(int rating);
     }
 }

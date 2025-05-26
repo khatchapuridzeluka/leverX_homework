@@ -42,7 +42,7 @@ namespace leverX.Application.Services
             return players.Select(MapToDto).ToList();
         }
 
-        public async Task<PlayerDto> UpdateAsync(Guid id, UpdatePlayerDto dto)
+        public async Task UpdateAsync(Guid id, UpdatePlayerDto dto)
         {
             var player = await _playerRepository.GetByIdAsync(id);
             if(player == null)
@@ -54,8 +54,6 @@ namespace leverX.Application.Services
             player.Nationality = dto.Nationality;
             player.Sex = dto.Sex;
             await _playerRepository.UpdateAsync(player);
-
-            return MapToDto(player);
         }
 
         public async Task DeleteAsync(Guid id)
@@ -63,9 +61,10 @@ namespace leverX.Application.Services
             await _playerRepository.DeleteAsync(id);
         }
 
-        public Task<List<PlayerDto>> GetByRating(int rating)
+        public async Task<List<PlayerDto>> GetByRatingAsync(int rating)
         {
-            throw new NotImplementedException();
+            var players = await _playerRepository.GetByRatingAsync(rating);
+            return players.Select(MapToDto).ToList();
         }
 
         private static PlayerDto MapToDto(Player p) => new()

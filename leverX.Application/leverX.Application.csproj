@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\leverX.Domain\leverX.Domain.csproj" />
-    <ProjectReference Include="..\leverX\leverX.csproj" />
     <ProjectReference Include="..\leverX.Dtos\leverX.Dtos.csproj" />
   </ItemGroup>
 

@@ -18,6 +18,7 @@ namespace leverX.Controllers
         /// <summary>
         /// Get all games
         /// </summary>
+        [ProducesResponseType(typeof(IEnumerable<GameDto>), 200)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
         {
@@ -28,6 +29,8 @@ namespace leverX.Controllers
         /// <summary>
         /// Get a game by ID
         /// </summary>
+        [ProducesResponseType(typeof(GameDto), 200)]
+        [ProducesResponseType(404)]
         [HttpGet("{id}")]
         public async Task<ActionResult<GameDto>> GetGame(Guid id)
         {
@@ -41,6 +44,7 @@ namespace leverX.Controllers
         /// <summary>
         /// Create a new game
         /// </summary>
+        [ProducesResponseType(typeof(GameDto), 201)]
         [HttpPost]
         public async Task<ActionResult<GameDto>> CreateGame(CreateGameDto dto)
         {
@@ -51,16 +55,18 @@ namespace leverX.Controllers
         /// <summary>
         /// Update an existing game
         /// </summary>
+        [ProducesResponseType(typeof(GameDto), 204)]
         [HttpPut("{id}")]
         public async Task<ActionResult<GameDto>> UpdateGame(Guid id, UpdateGameDto dto)
         {
-            var updatedGame = await _gameService.UpdateAsync(id, dto);
-            return Ok(updatedGame); // Or NoContent() if you don't want to return anything
+            await _gameService.UpdateAsync(id, dto);
+            return NoContent();
         }
 
         /// <summary>
         /// Delete a game
         /// </summary>
+        [ProducesResponseType(204)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame(Guid id)
         {

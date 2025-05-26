@@ -1,6 +1,6 @@
-﻿using leverX.Domain.Enums;
-using leverX.Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using leverX.Application.Interfaces.Services;
+using leverX.DTOs.Players;
 
 namespace leverX.Controllers
 {
@@ -8,39 +8,33 @@ namespace leverX.Controllers
     [Route("api/[controller]")]
     public class PlayersController : ControllerBase 
     {
-        private static List<Player> Players = new List<Player>
-        {
-            new Player { Id = Guid.NewGuid(), Name = "Magnus", LastName = "Carlsen", Nationality = Nationality.Norway, Sex = Sex.Male, FideRating = 2861, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Hikaru", LastName = "Nakamura", Nationality = Nationality.USA, Sex = Sex.Male, FideRating = 2789, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Alireza", LastName = "Firouzja", Nationality = Nationality.France, Sex = Sex.Male, FideRating = 2757, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Ian", LastName = "Nepomniachtchi", Nationality = Nationality.Russia, Sex = Sex.Male, FideRating = 2771, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Ding", LastName = "Liren", Nationality = Nationality.China, Sex = Sex.Male, FideRating = 2780, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Anish", LastName = "Giri", Nationality = Nationality.Netherlands, Sex = Sex.Male, FideRating = 2764, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Fabiano", LastName = "Caruana", Nationality = Nationality.USA, Sex = Sex.Male, FideRating = 2782, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Wesley", LastName = "So", Nationality = Nationality.USA, Sex = Sex.Male, FideRating = 2769, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-            new Player { Id = Guid.NewGuid(), Name = "Teimour", LastName = "Radjabov", Nationality = Nationality.Azerbaijan, Sex = Sex.Male, FideRating = 2738, Title = Title.GM, GamesAsWhite = new List<Game>(), GamesAsBlack = new List<Game>() },
-        };
+        private readonly IPlayerService _playerService;
 
+        public PlayersController(IPlayerService playerService)
+        {
+            _playerService = playerService;
+        }
 
         /// <summary>
         /// Get all players
         /// </summary>
-        /// <returns>All Players</returns>
+        [ProducesResponseType(typeof(IEnumerable<PlayerDto>), 200)]
         [HttpGet]
-        public ActionResult<IEnumerable<Player>> GetPlayers()
+        public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers()
         {
-            return Ok(Players);
+            var players = await _playerService.GetAllAsync();
+            return Ok(players);
         }
 
         /// <summary>
         /// Get Player by Id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(PlayerDto), 200)]
+        [ProducesResponseType(404)]
         [HttpGet("{id}")]
-        public ActionResult<Player> GetPlayer(Guid id)
+        public async Task<ActionResult<PlayerDto>> GetPlayer(Guid id)
         {
-            var player = Players.FirstOrDefault(p => p.Id == id);
+            var player = await _playerService.GetByIdAsync(id);
             if (player == null)
             {
                 return NotFound();
@@ -52,58 +46,46 @@ namespace leverX.Controllers
         /// <summary>
         /// Add the Player
         /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(PlayerDto), 201)]
         [HttpPost]
-        public ActionResult<Player> CreatePlayer(Player player)
+        public async  Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerDto dto)
         {
-            player.Id = Guid.NewGuid();
-            player.GamesAsWhite = new List<Game>();
-            player.GamesAsBlack = new List<Game>();
-            Players.Add(player);
-            return CreatedAtAction(nameof(GetPlayer), new { id = player.Id }, player);
+            var createdPlayer = await _playerService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetPlayer), new { id = createdPlayer.Id }, createdPlayer);
         }
 
 
         /// <summary>
         /// Update the player
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="updatedPlayer"></param>
-        /// <returns></returns>
+        [ProducesResponseType(204)]
         [HttpPut("{id}")]
-        public ActionResult UpdatePlayer(Guid id, Player updatedPlayer)
+        public async  Task<ActionResult> UpdatePlayer(Guid id, UpdatePlayerDto dto)
         {
-            var player = Players.FirstOrDefault(p => p.Id == id);
-            if (player == null)
-            {
-                return NotFound();
-            }
-            player.Name = updatedPlayer.Name;
-            player.LastName = updatedPlayer.LastName;
-            player.Nationality = updatedPlayer.Nationality;
-            player.Sex = updatedPlayer.Sex;
-            player.Title = updatedPlayer.Title;
-            player.FideRating = updatedPlayer.FideRating;
+            await _playerService.UpdateAsync(id, dto);
             return NoContent();
         }
 
         /// <summary>
         /// Delete the player
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        [ProducesResponseType(204)]
         [HttpDelete("{id}")]
-        public ActionResult DeletePlayer(Guid id)
+        public async Task<ActionResult> DeletePlayer(Guid id)
         {
-            var player = Players.FirstOrDefault(p => p.Id == id);
-
-            if(player == null)
-            {
-                return NotFound();
-            }
-            Players.Remove(player);
+            await _playerService.DeleteAsync(id);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Get players by rating
+        /// </summary>
+        [ProducesResponseType(typeof(IEnumerable<PlayerDto>),200)]
+        [HttpGet("rating/{rating}")]
+        public async Task<ActionResult<IEnumerable<PlayerDto>>> GetByRating(int rating)
+        {
+            var players = await _playerService.GetByRatingAsync(rating);
+            return Ok(players);
         }
     }
 }

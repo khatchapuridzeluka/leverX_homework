@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
+using leverX.DTOs.Players;
 namespace leverX.Infrastructure.Repositories
 {
     public class PlayerRepository : IPlayerRepository
@@ -42,5 +43,12 @@ namespace leverX.Infrastructure.Repositories
             _players.RemoveAll(p => p.Id == id);
             return Task.CompletedTask;
         }
+
+        public Task<List<Player>> GetByRatingAsync(int rating)
+        {
+            var result = _players.Where(p => p.FideRating >= rating).ToList();
+            return Task.FromResult(result);
+        }
     }
 }
+    

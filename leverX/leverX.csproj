@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\leverx.Application\leverX.Application.csproj" />
+    <ProjectReference Include="..\leverX.Infrastructure\leverX.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

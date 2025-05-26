@@ -39,7 +39,7 @@ namespace leverX.Application.Services
             return openings.Select(MapToDto).ToList();
         }
 
-        public async Task<OpeningDto> UpdateAsync(Guid id, UpdateOpeningDto dto)
+        public async Task UpdateAsync(Guid id, UpdateOpeningDto dto)
         {
             var opening = await _openingRepository.GetByIdAsync(id);
             if (opening == null)
@@ -49,7 +49,6 @@ namespace leverX.Application.Services
             opening.Moves = dto.Moves;
             await _openingRepository.UpdateAsync(opening);
 
-            return MapToDto(opening);
         }
 
         public async Task DeleteAsync(Guid id)

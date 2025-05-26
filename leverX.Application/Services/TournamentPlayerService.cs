@@ -12,7 +12,7 @@ namespace leverX.Application.Services
         {
             _tournamentPlayerRepository = tournamentPlayerRepository;
         }
-        
+
         public async Task<TournamentPlayerDto> CreateAsync(CreateTournamentPlayerDto dto)
         {
             var tournamentPlayer = new TournamentPlayer
@@ -20,15 +20,16 @@ namespace leverX.Application.Services
                 TournamentId = dto.TournamentId,
                 PlayerId = dto.PlayerId,
                 FinalRank = dto.FinalRank,
-                Score = dto.Score
+                Score = dto.Score,
             };
             await _tournamentPlayerRepository.AddAsync(tournamentPlayer);
+
             return MapToDto(tournamentPlayer);
         }
 
-        public async Task<TournamentPlayerDto?> GetByIdAsync(Guid id)
+        public async Task<TournamentPlayerDto?> GetByIdAsync(Guid tournamentId, Guid playerId)
         {
-            var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(id);
+            var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(tournamentId, playerId);
             return tournamentPlayer == null ? null : MapToDto(tournamentPlayer);
         }
 
@@ -38,34 +39,33 @@ namespace leverX.Application.Services
             return tournamentPlayers.Select(MapToDto).ToList();
         }
 
-        public async Task<TournamentPlayerDto> UpdateAsync(Guid id, UpdateTournamentPlayerDto updateDto)
+        public async Task UpdateAsync(Guid tournamentId, Guid playerId, UpdateTournamentPlayerDto dto)
         {
-            var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(id);
-            if (tournamentPlayer == null)
-                throw new Exception("Tournament player not found");
+            var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(tournamentId, playerId);
 
-            tournamentPlayer.TournamentId = updateDto.TournamentId;
-            tournamentPlayer.PlayerId = updateDto.PlayerId;
-            tournamentPlayer.FinalRank = updateDto.FinalRank;
-            tournamentPlayer.Score = updateDto.Score;
+            if(tournamentPlayer == null)
+            {
+                throw new Exception("TournamentPlayer not found");
+            }
+
+            tournamentPlayer.FinalRank = dto.FinalRank;
+            tournamentPlayer.Score = dto.Score;
 
             await _tournamentPlayerRepository.UpdateAsync(tournamentPlayer);
-
-            return MapToDto(tournamentPlayer);
-
         }
 
-        public async Task DeleteAsync(Guid id)
+
+        public async Task DeleteAsync(Guid tournamentId, Guid playerId)
         {
-            await _tournamentPlayerRepository.DeleteAsync(id);
+           await _tournamentPlayerRepository.DeleteAsync(tournamentId,playerId);
         }
 
-        private static TournamentPlayerDto MapToDto(TournamentPlayer tournamentPlayer) => new()
+        private static TournamentPlayerDto MapToDto(TournamentPlayer tp) => new()
         {
-            TournamentId = tournamentPlayer.TournamentId,
-            PlayerId = tournamentPlayer.PlayerId,
-            FinalRank = tournamentPlayer.FinalRank,
-            Score = tournamentPlayer.Score
+            TournamentId = tp.TournamentId,
+            PlayerId = tp.PlayerId,
+            FinalRank = tp.FinalRank,
+            Score = tp.Score
         };
     }
 }

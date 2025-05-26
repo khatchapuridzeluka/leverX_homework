@@ -1,44 +1,46 @@
-﻿using leverX.Domain.Entities;
+﻿using leverX.Application.Interfaces.Repositories;
+using leverX.Domain.Entities;
 
 namespace leverX.Infrastructure.Repositories
 {
-    public class TournamentPlayerRepository
+    public class TournamentPlayerRepository : ITournamentPlayerRepository
     {
         private readonly List<TournamentPlayer> _tournamentPlayers = new();
-        public Task AddAsync(TournamentPlayer tournamentPlayer)
+
+        public Task AddAsync(TournamentPlayer entity)
         {
-            _tournamentPlayers.Add(tournamentPlayer);
+            _tournamentPlayers.Add(entity);
             return Task.CompletedTask;
         }
-        public Task<TournamentPlayer?> GetByIdAsync(Guid id)
+
+        public Task<TournamentPlayer?> GetByIdAsync(Guid tournamentId, Guid playerId)
         {
-            var tournamentPlayer = _tournamentPlayers.FirstOrDefault(tp => tp.TournamentId == id);
+            var tournamentPlayer = _tournamentPlayers
+                .FirstOrDefault(tp => tp.TournamentId == tournamentId && tp.PlayerId == playerId);
             return Task.FromResult(tournamentPlayer);
         }
+
         public Task<List<TournamentPlayer>> GetAllAsync()
         {
-            return Task.FromResult(_tournamentPlayers);
+            return Task.FromResult(_tournamentPlayers.ToList());
         }
-        public Task UpdateAsync(TournamentPlayer tournamentPlayer)
+
+        public Task UpdateAsync(TournamentPlayer entity)
         {
-            var existing = _tournamentPlayers.FirstOrDefault(tp => tp.TournamentId == tournamentPlayer.TournamentId);
-            if (existing != null)
+            var existing = _tournamentPlayers
+                .FirstOrDefault(tp => tp.TournamentId == entity.TournamentId && tp.PlayerId == entity.PlayerId);
+            if(existing != null)
             {
-                existing.TournamentId = tournamentPlayer.TournamentId;
-                existing.PlayerId = tournamentPlayer.PlayerId;
-                existing.FinalRank = tournamentPlayer.FinalRank;
-                existing.Score = tournamentPlayer.Score;
+                existing.FinalRank = entity.FinalRank;
+                existing.Score = entity.Score;
             }
             return Task.CompletedTask;
         }
-        public Task DeleteAsync(Guid id)
+        public Task DeleteAsync(Guid tournamentId, Guid playerId)
         {
-            var tournamentPlayer = _tournamentPlayers.FirstOrDefault(tp => tp.TournamentId == id);
-            if (tournamentPlayer != null)
-            {
-                _tournamentPlayers.Remove(tournamentPlayer);
-            }
+            _tournamentPlayers.RemoveAll(tp =>
+               tp.TournamentId == tournamentId && tp.PlayerId == playerId);
             return Task.CompletedTask;
-        }   
+        }
     }
 }
