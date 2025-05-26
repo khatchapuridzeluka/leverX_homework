@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using leverX.Models;
+﻿
+using leverX.Application.Interfaces.Services;
+using leverX.DTOs.Tournaments;
+using Microsoft.AspNetCore.Mvc;
 
 namespace leverx.Controllers
 {
@@ -7,130 +9,73 @@ namespace leverx.Controllers
     [Route("api/[controller]")]
     public class TournamentsController : ControllerBase
     {
-        private static List<Tournament> Tournaments = new List<Tournament>
+
+        private readonly ITournamentService _tournamentService;
+
+        public TournamentsController(ITournamentService tournamentService)
         {
-            new Tournament
-            {
-                Id = Guid.NewGuid(),
-                Name = "World Chess Championship 2024",
-                StartDate = new DateTime(2024, 4, 1),
-                EndDate = new DateTime(2024, 4, 30),
-                Location = "Dubai, UAE",
-                Players = new List<Player>()
-            },
-            new Tournament
-            {
-                Id = Guid.NewGuid(),
-                Name = "Candidates Tournament 2023",
-                StartDate = new DateTime(2023, 6, 5),
-                EndDate = new DateTime(2023, 6, 25),
-                Location = "Madrid, Spain",
-                Players = new List<Player>()
-            },
-            new Tournament
-            {
-                Id = Guid.NewGuid(),
-                Name = "Tata Steel Chess 2024",
-                StartDate = new DateTime(2024, 1, 13),
-                EndDate = new DateTime(2024, 1, 28),
-                Location = "Wijk aan Zee, Netherlands",
-                Players = new List<Player>()
-            },
-            new Tournament
-            {
-                Id = Guid.NewGuid(),
-                Name = "Grand Chess Tour Romania",
-                StartDate = new DateTime(2024, 5, 9),
-                EndDate = new DateTime(2024, 5, 19),
-                Location = "Bucharest, Romania",
-                Players = new List<Player>()
-            },
-            new Tournament
-            {
-                Id = Guid.NewGuid(),
-                Name = "Sinquefield Cup 2023",
-                StartDate = new DateTime(2023, 8, 15),
-                EndDate = new DateTime(2023, 8, 29),
-                Location = "Saint Louis, USA",
-                Players = new List<Player>()
-            }
-        };
+            _tournamentService = tournamentService;
+        }
 
         /// <summary>
         /// Get all tournaments
         /// </summary>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(IEnumerable<TournamentDto>),200)]
         [HttpGet]
-        public ActionResult<IEnumerable<Tournament>> GetTournaments()
+        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetTournaments()
         {
-            return Ok(Tournaments);
+            var tournaments = await _tournamentService.GetAllAsync();
+            return Ok(tournaments);
         }
 
         /// <summary>
         /// Get Tournament by Id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(TournamentDto),200)]
+        [ProducesResponseType(404)]
         [HttpGet("{id}")]
-        public ActionResult<Tournament> GetTournament(Guid id)
+        public async Task<ActionResult<TournamentDto>> GetTournament(Guid id)
         {
-            var tournament = Tournaments.FirstOrDefault(t => t.Id == id);
+            var tournament = await _tournamentService.GetByIdAsync(id);
+
             if (tournament == null)
-            {
                 return NotFound();
-            }
+
             return Ok(tournament);
         }
 
         /// <summary>
         /// Create a new tournament
         /// </summary>
-        /// <param name="tournament"></param>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(CreateTournamentDto),201)]
         [HttpPost]
-        public ActionResult<Tournament> CreateTournament(Tournament tournament)
+        public async Task<ActionResult<TournamentDto>> CreateTournament(CreateTournamentDto dto)
         {
-            tournament.Id = Guid.NewGuid();
-            tournament.Players = new List<Player>();
-            Tournaments.Add(tournament);
-            return CreatedAtAction(nameof(GetTournament), new { id = tournament.Id }, tournament);
+            var createdTournament = await _tournamentService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetTournament), new { id = createdTournament.Id }, createdTournament);
         }
 
         /// <summary>
         /// Update the tournament
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="updatedTournament"></param>
-        /// <returns></returns>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         [HttpPut("{id}")]
-        public ActionResult UpdateTournament(Guid id, Tournament updatedTournament)
+        public async Task<ActionResult> UpdateTournament(Guid id, UpdateTournamentDto dto)
         {
-            var tournament = Tournaments.FirstOrDefault(t => t.Id == id);
-            if (tournament == null)
-            {
-                return NotFound();
-            }
-            tournament.Name = updatedTournament.Name;
-            tournament.StartDate = updatedTournament.StartDate;
-            tournament.EndDate = updatedTournament.EndDate;
-            tournament.Location = updatedTournament.Location;
+            // TODO: Catch the excpetion
+            await _tournamentService.UpdateAsync(id, dto);
             return NoContent();
         }
 
         /// <summary>
         /// Delete the tournament
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        [ProducesResponseType(204)]
         [HttpDelete("{id}")]
-        public ActionResult DeleteTournament(Guid id)
+        public async Task<ActionResult> DeleteTournament(Guid id)
         {
-            var tournament = Tournaments.FirstOrDefault(t => t.Id == id);
-            if(tournament == null)
-            {
-                return NotFound();
-            }
-            Tournaments.Remove(tournament);
+            await _tournamentService.DeleteAsync(id);
             return NoContent();
         }
     }

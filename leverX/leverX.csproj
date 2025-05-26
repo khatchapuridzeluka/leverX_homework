@@ -16,4 +16,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\leverx.Application\leverX.Application.csproj" />
+    <ProjectReference Include="..\leverX.Infrastructure\leverX.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
