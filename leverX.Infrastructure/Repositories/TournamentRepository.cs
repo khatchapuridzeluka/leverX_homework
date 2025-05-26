@@ -29,6 +29,7 @@ namespace leverX.Infrastructure.Repositories
                 existingTournament.StartDate = tournament.StartDate;
                 existingTournament.EndDate = tournament.EndDate;
                 existingTournament.Location = tournament.Location;
+                existingTournament.Players = tournament.Players;
             }
             return Task.CompletedTask;
         }

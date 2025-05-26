@@ -1,9 +1,8 @@
-﻿namespace leverX.DTOs.Openings
+﻿using leverX.Dtos.DTOs.Openings;
+
+namespace leverX.DTOs.Openings
 {
-    public class CreateOpeningDto
+    public class CreateOpeningDto : BaseOpeningDto
     {
-        public string Name { get; set; }
-        public string EcoCode { get; set; }
-        public List<string> Moves { get; set; }
     }
 }

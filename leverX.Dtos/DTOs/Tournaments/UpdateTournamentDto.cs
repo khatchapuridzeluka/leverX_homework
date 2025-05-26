@@ -1,18 +1,10 @@
-﻿namespace leverX.DTOs.Tournaments
+﻿using leverX.Dtos.DTOs.Tournaments;
+
+namespace leverX.DTOs.Tournaments
 {
-    public class UpdateTournamentDto
+    public class UpdateTournamentDto : BaseTournamentDto
     {
         public Guid Id { get; set; }
-
-        public string Name { get; set; }
-
-        public DateTime StartDate { get; set; }
-
-        public DateTime EndDate { get; set; }
-
-        public string Location { get; set; }
-
-        public List<Guid> PlayerIds { get; set; }
     }
 
 }

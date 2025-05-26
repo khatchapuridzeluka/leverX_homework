@@ -1,16 +1,8 @@
-﻿using leverX.Domain.Enums;
+﻿using leverX.Dtos.DTOs.Games;
 
 namespace leverX.DTOs.Games
 {
-    public class CreateGameDto
+    public class CreateGameDto : BaseGameDto
     {
-        public Guid WhitePlayerId { get; set; }
-        public Guid BlackPlayerId { get; set;}
-        public Result Result { get; set; }
-        public List<string> Moves { get; set; }
-        public DateTime PlayedOn { get; set; }
-        public Guid OpeningId { get; set; }
-
-        public Guid? TournamentId { get; set; }
     }
 }

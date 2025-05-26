@@ -55,6 +55,7 @@ namespace leverX.Controllers
         /// Update an existing tournament player
         /// </summary>
         [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         [HttpPut("tournament/{tournamentId}/player/{playerId}")]
         public async Task<ActionResult> UpdateTournamentPlayer(Guid tournamentId, Guid playerId, UpdateTournamentPlayerDto dto)
         {

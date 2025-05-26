@@ -9,9 +9,11 @@ namespace leverX.Application.Services
     public class TournamentService : ITournamentService
     {
         private readonly ITournamentRepository _tournamentRepository;
-        public TournamentService(ITournamentRepository tournamentRepository)
+        private readonly IPlayerRepository _playerRepository;
+        public TournamentService(ITournamentRepository tournamentRepository, IPlayerRepository playerRepository)
         {
             _tournamentRepository = tournamentRepository;
+            _playerRepository = playerRepository;
         }
         public async Task<TournamentDto> CreateAsync(CreateTournamentDto dto)
         {
@@ -21,7 +23,8 @@ namespace leverX.Application.Services
                 Name = dto.Name,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
-                Location = dto.Location
+                Location = dto.Location,
+                Players = dto.PlayerIds.Select(id => new Player { Id = id }).ToList()
             };
             await _tournamentRepository.AddAsync(tournament);
             return DtoMapper.MapToDto(tournament);

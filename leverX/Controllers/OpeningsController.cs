@@ -57,6 +57,7 @@ namespace leverX.Controllers
         /// Update the opening
         /// </summary>
         [ProducesResponseType(typeof(UpdateOpeningDto), 204)]
+        [ProducesResponseType(404)]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateOpening(Guid id, UpdateOpeningDto dto)
         {

@@ -59,6 +59,7 @@ namespace leverX.Controllers
         /// Update the player
         /// </summary>
         [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         [HttpPut("{id}")]
         public async  Task<ActionResult> UpdatePlayer(Guid id, UpdatePlayerDto dto)
         {
