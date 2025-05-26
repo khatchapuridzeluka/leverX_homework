@@ -1,3 +1,7 @@
+using leverX.Application.Interfaces.Repositories;
+using leverX.Application.Interfaces.Services;
+using leverX.Application.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddScoped<IPlayerRepository, IPlayerRepository>();
+builder.Services.AddScoped<IGameRepository, IGameRepository>();
+builder.Services.AddScoped<ITournamentRepository, ITournamentRepository>();
+builder.Services.AddScoped<IOpeningRepository, IOpeningRepository>();
+builder.Services.AddScoped<ITournamentPlayerRepository, ITournamentPlayerRepository>();
+
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<ITournamentService, TournamentService>();
+builder.Services.AddScoped<IOpeningService, OpeningService>();
+builder.Services.AddScoped<ITournamentPlayerService, TournamentPlayerService>();
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {

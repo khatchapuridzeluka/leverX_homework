@@ -59,7 +59,7 @@ namespace leverX.Application.Services
             return games.Select(MapToDto).ToList();
         }
 
-        public async Task UpdateAsync(Guid id, UpdateGameDto dto)
+        public async Task<GameDto> UpdateAsync(Guid id, UpdateGameDto dto)
         {
             var game = await _gameRepository.GetByIdAsync(id);
             if (game == null)
@@ -84,6 +84,8 @@ namespace leverX.Application.Services
             game.PlayedOn = dto.PlayedOn;
             game.Opening = opening;
             await _gameRepository.UpdateAsync(game);
+
+            return MapToDto(game);
         }
 
         public async Task DeleteAsync(Guid id)

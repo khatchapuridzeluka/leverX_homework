@@ -35,7 +35,7 @@ namespace leverX.Application.Services
             var tournaments = await _tournamentRepository.GetAllAsync();
             return tournaments.Select(MapToDto).ToList();
         }
-        public async Task UpdateAsync(Guid id, UpdateTournamentDto dto)
+        public async Task<TournamentDto> UpdateAsync(Guid id, UpdateTournamentDto dto)
         {
             var tournament = await _tournamentRepository.GetByIdAsync(id);
             if (tournament == null)
@@ -45,6 +45,8 @@ namespace leverX.Application.Services
             tournament.EndDate = dto.EndDate;
             tournament.Location = dto.Location;
             await _tournamentRepository.UpdateAsync(tournament);
+
+            return MapToDto(tournament);
         }
         public async Task DeleteAsync(Guid id)
         {

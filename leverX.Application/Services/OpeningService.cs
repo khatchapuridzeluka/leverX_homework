@@ -1,10 +1,11 @@
 ﻿using leverX.Application.Interfaces.Repositories;
+using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
 using leverX.DTOs.Openings;
 
 namespace leverX.Application.Services
 {
-    public class OpeningService
+    public class OpeningService : IOpeningService
     {
         private readonly IOpeningRepository _openingRepository;
 
@@ -38,7 +39,7 @@ namespace leverX.Application.Services
             return openings.Select(MapToDto).ToList();
         }
 
-        public async Task UpdateAsync(Guid id, UpdateOpeningDto dto)
+        public async Task<OpeningDto> UpdateAsync(Guid id, UpdateOpeningDto dto)
         {
             var opening = await _openingRepository.GetByIdAsync(id);
             if (opening == null)
@@ -47,6 +48,8 @@ namespace leverX.Application.Services
             opening.EcoCode = dto.EcoCode;
             opening.Moves = dto.Moves;
             await _openingRepository.UpdateAsync(opening);
+
+            return MapToDto(opening);
         }
 
         public async Task DeleteAsync(Guid id)

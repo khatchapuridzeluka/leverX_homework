@@ -4,9 +4,6 @@
     {
         public Guid TournamentId { get; set; }
         public Guid PlayerId { get; set; }
-
-        public Tournament Tournament { get; set; }
-        public Player Player { get; set; }
         public int FinalRank { get; set; }
         public float Score { get; set; }
     }

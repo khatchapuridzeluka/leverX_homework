@@ -1,104 +1,71 @@
-﻿using leverX.Domain.Entities;
-using leverX.Domain.Enums;
+﻿using leverX.Application.Interfaces.Services;
+using leverX.DTOs.Games;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverX.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class  GamesController : ControllerBase 
+    public class GamesController : ControllerBase
     {
-        private static List<Game> Games = new List<Game>
-        {
-            new Game { Id = Guid.NewGuid(),Result = (Result)1, Moves = new List<string> { "e4-e5", "Nf3-Nc6", "Bb5-a6" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)2, Moves = new List<string> { "d4-d5", "c4-e6", "Nc3-Nf6" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)3, Moves = new List<string> { "e4-c5", "Nf3-d6", "d4-cxd4" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)1, Moves = new List<string> { "e4-e5", "Nf3-Nc6", "Bc4-Bc5" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)2, Moves = new List<string> { "d4-Nf6", "c4-g6", "Nc3-Bg7" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)1, Moves = new List<string> { "e4-e6", "d4-d5", "Nc3-Bb4" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)3, Moves = new List<string> { "e4-c5", "Nf3-Nc6", "d4-cxd4" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)1, Moves = new List<string> { "d4-d5", "c4-c6", "Nc3-Nf6" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)2, Moves = new List<string> { "e4-c5", "Nf3-d6", "d4-cxd4" }},
-            new Game { Id = Guid.NewGuid(),Result = (Result)1, Moves = new List<string> { "e4-e5", "Nf3-Nc6", "d4-exd4" }}
-        };
+        private readonly IGameService _gameService;
 
-        /// <summary>
-        /// Get All Games
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResult<IEnumerable<Game>> GetGames()
+        public GamesController(IGameService gameService)
         {
-            return Ok(Games);
+            _gameService = gameService;
         }
 
+        /// <summary>
+        /// Get all games
+        /// </summary>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetGames()
+        {
+            var games = await _gameService.GetAllAsync();
+            return Ok(games);
+        }
 
         /// <summary>
-        /// Get Game by Id
+        /// Get a game by ID
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<Game> GetGame(Guid id)
+        public async Task<ActionResult<GameDto>> GetGame(Guid id)
         {
-            var game = Games.FirstOrDefault(g => g.Id == id);
+            var game = await _gameService.GetByIdAsync(id);
             if (game == null)
-            {
                 return NotFound();
-            }
+
             return Ok(game);
         }
 
         /// <summary>
-        /// Create a new Game
+        /// Create a new game
         /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
         [HttpPost]
-        public ActionResult<Game> CreateGame(Game game)
+        public async Task<ActionResult<GameDto>> CreateGame(CreateGameDto dto)
         {
-            game.Id = Guid.NewGuid();
-            Games.Add(game);
-            return CreatedAtAction(nameof(GetGame), new { id = game.Id }, game);
+            var createdGame = await _gameService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetGame), new { id = createdGame.Id }, createdGame);
         }
 
         /// <summary>
-        /// Update an existing Game
+        /// Update an existing game
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="updatedGame"></param>
-        /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult<Game> UpdateGame(Guid id, Game updatedGame)
+        public async Task<ActionResult<GameDto>> UpdateGame(Guid id, UpdateGameDto dto)
         {
-            var game = Games.FirstOrDefault(g => g.Id == id);
-            if ( game == null)
-            {
-                return NotFound();
-            }
-            game.Result = updatedGame.Result;
-            game.Moves = updatedGame.Moves;
-            game.PlayedOn = updatedGame.PlayedOn;
-            return NoContent();
+            var updatedGame = await _gameService.UpdateAsync(id, dto);
+            return Ok(updatedGame); // Or NoContent() if you don't want to return anything
         }
 
         /// <summary>
-        /// Delete a Game
+        /// Delete a game
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        public ActionResult DeleteGame(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGame(Guid id)
         {
-            var game = Games.FirstOrDefault(g => g.Id == id);
-            if (game == null)
-            {
-                return NotFound();
-            }
-
-            Games.Remove(game);
+            await _gameService.DeleteAsync(id);
             return NoContent();
         }
-    };
- 
+    }
 }

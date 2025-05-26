@@ -42,18 +42,20 @@ namespace leverX.Application.Services
             return players.Select(MapToDto).ToList();
         }
 
-        public async Task UpdateAsync(Guid id, UpdatePlayerDto dto)
+        public async Task<PlayerDto> UpdateAsync(Guid id, UpdatePlayerDto dto)
         {
-            var existing = await _playerRepository.GetByIdAsync(id);
-            if(existing == null)
+            var player = await _playerRepository.GetByIdAsync(id);
+            if(player == null)
                 throw new Exception("Player not found");
-            existing.Name = dto.Name;
-            existing.LastName = dto.LastName;
-            existing.FideRating = dto.FideRating;
-            existing.Title = dto.Title;
-            existing.Nationality = dto.Nationality;
-            existing.Sex = dto.Sex;
-            await _playerRepository.UpdateAsync(existing);
+            player.Name = dto.Name;
+            player.LastName = dto.LastName;
+            player.FideRating = dto.FideRating;
+            player.Title = dto.Title;
+            player.Nationality = dto.Nationality;
+            player.Sex = dto.Sex;
+            await _playerRepository.UpdateAsync(player);
+
+            return MapToDto(player);
         }
 
         public async Task DeleteAsync(Guid id)

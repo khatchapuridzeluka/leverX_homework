@@ -38,7 +38,7 @@ namespace leverX.Application.Services
             return tournamentPlayers.Select(MapToDto).ToList();
         }
 
-        public async Task UpdateAsync(Guid id, UpdateTournamentPlayerDto updateDto)
+        public async Task<TournamentPlayerDto> UpdateAsync(Guid id, UpdateTournamentPlayerDto updateDto)
         {
             var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(id);
             if (tournamentPlayer == null)
@@ -50,6 +50,8 @@ namespace leverX.Application.Services
             tournamentPlayer.Score = updateDto.Score;
 
             await _tournamentPlayerRepository.UpdateAsync(tournamentPlayer);
+
+            return MapToDto(tournamentPlayer);
 
         }
 
