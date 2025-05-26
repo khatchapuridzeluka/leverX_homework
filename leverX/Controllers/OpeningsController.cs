@@ -60,6 +60,7 @@ namespace leverX.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateOpening(Guid id, UpdateOpeningDto dto)
         {
+            //TODO: CATCH THE EXCEPTION
             await _openingService.UpdateAsync(id, dto);
             return NoContent();
         }

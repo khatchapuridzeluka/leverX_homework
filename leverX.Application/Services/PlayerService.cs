@@ -45,8 +45,11 @@ namespace leverX.Application.Services
         public async Task UpdateAsync(Guid id, UpdatePlayerDto dto)
         {
             var player = await _playerRepository.GetByIdAsync(id);
+
             if(player == null)
+                //TODO: CREATE A CUSTOM EXCEPTION
                 throw new Exception("Player not found");
+
             player.Name = dto.Name;
             player.LastName = dto.LastName;
             player.FideRating = dto.FideRating;

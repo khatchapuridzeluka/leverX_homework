@@ -10,6 +10,8 @@ namespace leverX.DTOs.Games
         public List<string> Moves { get; set; } = new();
         public DateTime PlayedOn { get; set; }
         public Guid OpeningId { get; set; }
+
+        public Guid? TournamentId { get; set; }
     }
 
 }

@@ -10,27 +10,24 @@ namespace leverX.Application.Services
         private readonly IGameRepository _gameRepository;
         private readonly IPlayerRepository _playerRepository;
         private readonly IOpeningRepository _openingRepository;
+        private readonly ITournamentRepository _tournamentRepository;
 
-        public GameService(IGameRepository gameRepository, IPlayerRepository playerRepository, IOpeningRepository openingRepository)
+        public GameService(IGameRepository gameRepository, IPlayerRepository playerRepository, IOpeningRepository openingRepository, ITournamentRepository tournamentRepository)
         {
             _gameRepository = gameRepository;
             _playerRepository = playerRepository;
             _openingRepository = openingRepository;
+            _tournamentRepository = tournamentRepository;
         }
 
         public async Task<GameDto> CreateAsync(CreateGameDto dto)
         {
-            var whitePlayer = await _playerRepository.GetByIdAsync(dto.WhitePlayerId);
-            if (whitePlayer == null)
-                throw new Exception("White player not found");
 
-            var blackPlayer = await _playerRepository.GetByIdAsync(dto.BlackPlayerId);
-            if (blackPlayer == null)
-                throw new Exception("Black player not found");
-
-            var opening = await _openingRepository.GetByIdAsync(dto.OpeningId);
-            if (opening == null)
-                throw new Exception("Opening not found");
+            //TODO: CREATE THE CUSTOM EXCEPTION
+            var whitePlayer = await GetPlayerOrThrowAsync(dto.WhitePlayerId);
+            var blackPlayer = await GetPlayerOrThrowAsync(dto.BlackPlayerId);
+            var opening = await GetOpeningOrThrowAsync(dto.OpeningId);
+            var tournament = await GetTournamentIfExistsAsync(dto.TournamentId);
 
             var game = new Game
             {
@@ -40,7 +37,8 @@ namespace leverX.Application.Services
                 Result = dto.Result,
                 Moves = dto.Moves,
                 PlayedOn = dto.PlayedOn,
-                Opening = opening
+                Opening = opening,
+                Tournament = tournament
             };
 
             await _gameRepository.AddAsync(game);
@@ -61,21 +59,15 @@ namespace leverX.Application.Services
 
         public async Task UpdateAsync(Guid id, UpdateGameDto dto)
         {
+            //TODO: CREATE A CUSTOM EXCEPTION
             var game = await _gameRepository.GetByIdAsync(id);
             if (game == null)
                 throw new Exception("Game not found");
 
-            var whitePlayer = await _playerRepository.GetByIdAsync(dto.WhitePlayerId);
-            if (whitePlayer == null)
-                throw new Exception("White player not found");
-
-            var blackPlayer = await _playerRepository.GetByIdAsync(dto.BlackPlayerId);
-            if (blackPlayer == null)
-                throw new Exception("Black player not found");
-            var opening = await _openingRepository.GetByIdAsync(dto.OpeningId);
-
-            if (opening == null)
-                throw new Exception("Opening not found");
+            var whitePlayer = await GetPlayerOrThrowAsync(dto.WhitePlayerId);
+            var blackPlayer = await GetPlayerOrThrowAsync(dto.BlackPlayerId);
+            var opening = await GetOpeningOrThrowAsync(dto.OpeningId);
+            var tournament = await GetTournamentIfExistsAsync(dto.TournamentId);
 
             game.WhitePlayer = whitePlayer;
             game.BlackPlayer = blackPlayer;
@@ -83,6 +75,7 @@ namespace leverX.Application.Services
             game.Moves = dto.Moves;
             game.PlayedOn = dto.PlayedOn;
             game.Opening = opening;
+            game.Tournament = tournament;
             await _gameRepository.UpdateAsync(game);
         }
 
@@ -99,7 +92,32 @@ namespace leverX.Application.Services
             Result = game.Result,
             Moves = game.Moves,
             PlayedOn = game.PlayedOn,
-            OpeningId = game.Opening.Id
+            OpeningId = game.Opening.Id,
+            TournamentId = game.Tournament != null ? game.Tournament.Id : (Guid?)null
         };
+
+        private async Task<Player> GetPlayerOrThrowAsync(Guid playerId)
+        {
+            var player = await _playerRepository.GetByIdAsync(playerId);
+            if (player == null)
+                throw new Exception("Player Not Found");
+            return player;
+        }
+
+        private async Task<Opening> GetOpeningOrThrowAsync(Guid openingId)
+        {
+            var opening = await _openingRepository.GetByIdAsync(openingId);
+            if (opening == null)
+                throw new Exception("Opening not found");
+            return opening;
+        }
+
+        private async Task<Tournament?> GetTournamentIfExistsAsync(Guid? tournamentId)
+        {
+            if (tournamentId == null)
+                return null;
+
+            return await _tournamentRepository.GetByIdAsync(tournamentId.Value);
+        }
     }
 }

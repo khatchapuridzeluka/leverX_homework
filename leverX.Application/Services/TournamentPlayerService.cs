@@ -45,6 +45,7 @@ namespace leverX.Application.Services
 
             if(tournamentPlayer == null)
             {
+                //TODO: CREATE A CUSTOM EXCEPTION
                 throw new Exception("TournamentPlayer not found");
             }
 

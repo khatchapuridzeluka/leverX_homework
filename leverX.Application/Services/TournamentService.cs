@@ -38,8 +38,11 @@ namespace leverX.Application.Services
         public async Task UpdateAsync(Guid id, UpdateTournamentDto dto)
         {
             var tournament = await _tournamentRepository.GetByIdAsync(id);
+
+            // TODO: Create custom exception to handle 
             if (tournament == null)
                 throw new Exception("Tournament not found");
+
             tournament.Name = dto.Name;
             tournament.StartDate = dto.StartDate;
             tournament.EndDate = dto.EndDate;

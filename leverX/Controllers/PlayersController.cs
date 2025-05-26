@@ -62,6 +62,7 @@ namespace leverX.Controllers
         [HttpPut("{id}")]
         public async  Task<ActionResult> UpdatePlayer(Guid id, UpdatePlayerDto dto)
         {
+            //TODO: CATCH THE EXCEPTION
             await _playerService.UpdateAsync(id, dto);
             return NoContent();
         }

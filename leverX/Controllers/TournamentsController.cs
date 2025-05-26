@@ -62,6 +62,7 @@ namespace leverx.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateTournament(Guid id, UpdateTournamentDto dto)
         {
+            // TODO: Catch the excpetion
             await _tournamentService.UpdateAsync(id, dto);
             return NoContent();
         }

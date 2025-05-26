@@ -58,6 +58,7 @@ namespace leverX.Controllers
         [HttpPut("tournament/{tournamentId}/player/{playerId}")]
         public async Task<ActionResult> UpdateTournamentPlayer(Guid tournamentId, Guid playerId, UpdateTournamentPlayerDto dto)
         {
+            //TODO: CATCH THE EXCEPTION
             await _tournamentPlayerService.UpdateAsync(tournamentId,playerId, dto);
             return NoContent();
         }

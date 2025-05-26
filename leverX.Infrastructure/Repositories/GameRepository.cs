@@ -34,6 +34,7 @@ namespace leverX.Infrastructure.Repositories
                 existing.Moves = game.Moves;
                 existing.PlayedOn = game.PlayedOn;
                 existing.Opening = game.Opening;
+                existing.Tournament = game.Tournament;
             }
             return Task.CompletedTask;
         }

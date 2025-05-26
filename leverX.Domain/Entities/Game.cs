@@ -11,5 +11,6 @@ namespace leverX.Domain.Entities
         public List<string> Moves { get; set; }
         public DateTime PlayedOn { get; set; }
         public Opening Opening { get; set; }
+        public Tournament? Tournament { get; set; }
     }
 }

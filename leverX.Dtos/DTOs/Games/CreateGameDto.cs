@@ -11,5 +11,6 @@ namespace leverX.DTOs.Games
         public DateTime PlayedOn { get; set; }
         public Guid OpeningId { get; set; }
 
+        public Guid? TournamentId { get; set; }
     }
 }

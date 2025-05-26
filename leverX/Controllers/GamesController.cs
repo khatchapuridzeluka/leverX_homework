@@ -48,6 +48,7 @@ namespace leverX.Controllers
         [HttpPost]
         public async Task<ActionResult<GameDto>> CreateGame(CreateGameDto dto)
         {
+            //TODO: CATCH THE EXCEPTION
             var createdGame = await _gameService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetGame), new { id = createdGame.Id }, createdGame);
         }
@@ -59,6 +60,7 @@ namespace leverX.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<GameDto>> UpdateGame(Guid id, UpdateGameDto dto)
         {
+            //TODO: CATCH THE EXCEPTION
             await _gameService.UpdateAsync(id, dto);
             return NoContent();
         }

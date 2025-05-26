@@ -43,6 +43,7 @@ namespace leverX.Application.Services
         {
             var opening = await _openingRepository.GetByIdAsync(id);
             if (opening == null)
+                //TODO: CREATE THE CUSTOM EXCEPTION
                 throw new Exception("Opening not found");
             opening.Name = dto.Name;
             opening.EcoCode = dto.EcoCode;
