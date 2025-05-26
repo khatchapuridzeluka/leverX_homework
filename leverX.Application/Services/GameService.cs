@@ -1,4 +1,5 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using leverX.Application.Helpers;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
 using leverX.DTOs.Games;
@@ -42,19 +43,19 @@ namespace leverX.Application.Services
             };
 
             await _gameRepository.AddAsync(game);
-            return MapToDto(game);
+            return DtoMapper.MapToDto(game);
         }
 
         public async Task<GameDto?> GetByIdAsync(Guid id)
         {
             var game = await _gameRepository.GetByIdAsync(id);
-            return game == null ? null : MapToDto(game);
+            return game == null ? null : DtoMapper.MapToDto(game);
         }
 
         public async Task<List<GameDto>> GetAllAsync()
         {
             var games = await _gameRepository.GetAllAsync();
-            return games.Select(MapToDto).ToList();
+            return games.Select(DtoMapper.MapToDto).ToList();
         }
 
         public async Task UpdateAsync(Guid id, UpdateGameDto dto)
@@ -83,19 +84,6 @@ namespace leverX.Application.Services
         {
             await _gameRepository.DeleteAsync(id);
         }
-
-        private static GameDto MapToDto(Game game) => new()
-        {
-            Id = game.Id,
-            WhitePlayerId = game.WhitePlayer.Id,
-            BlackPlayerId = game.BlackPlayer.Id,
-            Result = game.Result,
-            Moves = game.Moves,
-            PlayedOn = game.PlayedOn,
-            OpeningId = game.Opening.Id,
-            TournamentId = game.Tournament != null ? game.Tournament.Id : (Guid?)null
-        };
-
         private async Task<Player> GetPlayerOrThrowAsync(Guid playerId)
         {
             var player = await _playerRepository.GetByIdAsync(playerId);

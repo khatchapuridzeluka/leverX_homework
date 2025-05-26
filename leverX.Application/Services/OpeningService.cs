@@ -1,4 +1,5 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using leverX.Application.Helpers;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
 using leverX.DTOs.Openings;
@@ -24,19 +25,20 @@ namespace leverX.Application.Services
                 Moves = dto.Moves
             };
             await _openingRepository.AddAsync(opening);
-            return MapToDto(opening);
+
+            return DtoMapper.MapToDto(opening);
         }
 
         public async Task<OpeningDto?> GetByIdAsync(Guid id)
         {
             var opening = await _openingRepository.GetByIdAsync(id);
-            return opening == null ? null : MapToDto(opening);
+            return opening == null ? null : DtoMapper.MapToDto(opening);
         }
 
         public async Task<List<OpeningDto>> GetAllAsync()
         {
             var openings = await _openingRepository.GetAllAsync();
-            return openings.Select(MapToDto).ToList();
+            return openings.Select(DtoMapper.MapToDto).ToList();
         }
 
         public async Task UpdateAsync(Guid id, UpdateOpeningDto dto)
@@ -56,13 +58,5 @@ namespace leverX.Application.Services
         {
             await _openingRepository.DeleteAsync(id);
         }
-
-        private static OpeningDto MapToDto(Opening opening) => new()
-        {
-            Id = opening.Id,
-            Name = opening.Name,
-            EcoCode = opening.EcoCode,
-            Moves = opening.Moves
-        };
     }
 }

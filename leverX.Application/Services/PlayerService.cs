@@ -1,4 +1,5 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using leverX.Application.Helpers;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
 using leverX.DTOs.Players;
@@ -27,19 +28,19 @@ namespace leverX.Application.Services
                 Title = dto.Title
             };
             await _playerRepository.AddAsync(player);
-            return MapToDto(player);
+            return DtoMapper.MapToDto(player);
         }
 
         public async Task<PlayerDto?> GetByIdAsync(Guid id)
         {
             var player = await _playerRepository.GetByIdAsync(id);
-            return player == null ? null : MapToDto(player);
+            return player == null ? null : DtoMapper.MapToDto(player);
         }
 
         public async Task<List<PlayerDto>> GetAllAsync()
         {
             var players = await _playerRepository.GetAllAsync();
-            return players.Select(MapToDto).ToList();
+            return players.Select(DtoMapper.MapToDto).ToList();
         }
 
         public async Task UpdateAsync(Guid id, UpdatePlayerDto dto)
@@ -67,18 +68,7 @@ namespace leverX.Application.Services
         public async Task<List<PlayerDto>> GetByRatingAsync(int rating)
         {
             var players = await _playerRepository.GetByRatingAsync(rating);
-            return players.Select(MapToDto).ToList();
+            return players.Select(DtoMapper.MapToDto).ToList();
         }
-
-        private static PlayerDto MapToDto(Player p) => new()
-        {
-            Id = p.Id,
-            Name = p.Name,
-            LastName = p.LastName,
-            Sex = p.Sex,
-            Nationality = p.Nationality,
-            FideRating = p.FideRating,
-            Title = p.Title
-        };
     }
 }

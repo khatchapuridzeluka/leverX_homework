@@ -1,4 +1,5 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using leverX.Application.Helpers;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
 using leverX.DTOs.TournamentPlayers;
@@ -24,19 +25,19 @@ namespace leverX.Application.Services
             };
             await _tournamentPlayerRepository.AddAsync(tournamentPlayer);
 
-            return MapToDto(tournamentPlayer);
+            return DtoMapper.MapToDto(tournamentPlayer);
         }
 
         public async Task<TournamentPlayerDto?> GetByIdAsync(Guid tournamentId, Guid playerId)
         {
             var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(tournamentId, playerId);
-            return tournamentPlayer == null ? null : MapToDto(tournamentPlayer);
+            return tournamentPlayer == null ? null : DtoMapper.MapToDto(tournamentPlayer);
         }
 
         public async Task<List<TournamentPlayerDto>> GetAllAsync()
         {
             var tournamentPlayers = await _tournamentPlayerRepository.GetAllAsync();
-            return tournamentPlayers.Select(MapToDto).ToList();
+            return tournamentPlayers.Select(DtoMapper.MapToDto).ToList();
         }
 
         public async Task UpdateAsync(Guid tournamentId, Guid playerId, UpdateTournamentPlayerDto dto)
@@ -60,13 +61,5 @@ namespace leverX.Application.Services
         {
            await _tournamentPlayerRepository.DeleteAsync(tournamentId,playerId);
         }
-
-        private static TournamentPlayerDto MapToDto(TournamentPlayer tp) => new()
-        {
-            TournamentId = tp.TournamentId,
-            PlayerId = tp.PlayerId,
-            FinalRank = tp.FinalRank,
-            Score = tp.Score
-        };
     }
 }

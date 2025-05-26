@@ -1,4 +1,5 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using leverX.Application.Helpers;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
 using leverX.DTOs.Tournaments;
@@ -23,17 +24,17 @@ namespace leverX.Application.Services
                 Location = dto.Location
             };
             await _tournamentRepository.AddAsync(tournament);
-            return MapToDto(tournament);
+            return DtoMapper.MapToDto(tournament);
         }
         public async Task<TournamentDto?> GetByIdAsync(Guid id)
         {
             var tournament = await _tournamentRepository.GetByIdAsync(id);
-            return tournament == null ? null : MapToDto(tournament);
+            return tournament == null ? null : DtoMapper.MapToDto(tournament);
         }
         public async Task<List<TournamentDto>> GetAllAsync()
         {
             var tournaments = await _tournamentRepository.GetAllAsync();
-            return tournaments.Select(MapToDto).ToList();
+            return tournaments.Select(DtoMapper.MapToDto).ToList();
         }
         public async Task UpdateAsync(Guid id, UpdateTournamentDto dto)
         {
@@ -53,14 +54,5 @@ namespace leverX.Application.Services
         {
             await _tournamentRepository.DeleteAsync(id);
         }
-
-        private static TournamentDto MapToDto(Tournament tournament) => new()
-        {
-            Id = tournament.Id,
-            Name = tournament.Name,
-            StartDate = tournament.StartDate,
-            EndDate = tournament.EndDate,
-            Location = tournament.Location
-        };
     }
 }
