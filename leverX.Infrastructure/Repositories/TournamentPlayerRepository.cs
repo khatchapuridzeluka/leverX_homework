@@ -44,7 +44,7 @@ namespace leverX.Infrastructure.Repositories
 
         public async Task<List<TournamentPlayer>> GetAllAsync()
         {
-            var sql = "SELECT * FROM TournamentPlayers";
+            var sql = "SELECT * FROM TournamentPlayer";
             var tournamentPlayers = await _tournamentPlayers.QueryAsync<TournamentPlayer>(sql);
             return tournamentPlayers.AsList();
         }

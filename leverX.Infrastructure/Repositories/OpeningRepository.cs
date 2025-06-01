@@ -47,6 +47,7 @@ namespace leverX.Infrastructure.Repositories
         public async Task<List<Opening>> GetAllAsync()
         {
             var sql = @"SELECT * FROM Openings";
+
             var rows = await _connection.QueryAsync<OpeningDbRow>(sql);
             return rows.Select(row => new Opening
             {

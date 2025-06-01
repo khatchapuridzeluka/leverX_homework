@@ -2,6 +2,8 @@ using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Infrastructure.Repositories;
 using leverX.Application.Services;
+using System.Data;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new SqlConnection(connectionString);
+});
+
 
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
