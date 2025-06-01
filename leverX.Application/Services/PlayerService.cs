@@ -27,9 +27,12 @@ namespace leverX.Application.Services
                 FideRating = dto.FideRating,
                 Title = dto.Title
             };
+
             await _playerRepository.AddAsync(player);
+
             return DtoMapper.MapToDto(player);
         }
+
 
         public async Task<PlayerDto?> GetByIdAsync(Guid id)
         {

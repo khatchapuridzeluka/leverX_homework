@@ -1,53 +1,60 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Data;
+using Dapper;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
-using leverX.DTOs.Players;
 namespace leverX.Infrastructure.Repositories
 {
     public class PlayerRepository : IPlayerRepository
     {
-        private readonly List<Player> _players = new(); 
+        private readonly IDbConnection _players;
+
+        public PlayerRepository(IDbConnection players)
+        {
+            _players = players;
+        }
 
         public Task AddAsync(Player player)
-        {   
-            _players.Add(player);
-            return Task.CompletedTask;
+        {
+            var sql = @"INSERT INTO Players (Id, Name, LastName, Sex, Nationality, FideRating, Title)
+                VALUES (@Id, @Name, @LastName, @Sex, @Nationality, @FideRating, @Title)";
+            return _players.ExecuteAsync(sql, player);
         }
 
-        public Task<Player?> GetByIdAsync(Guid id)
+        public async Task<Player?> GetByIdAsync(Guid id)
         {
-            return Task.FromResult(_players.FirstOrDefault(p => p.Id == id));
+            var sql = @"SELECT * FROM Players WHERE Id = @Id";
+            return await _players.QueryFirstOrDefaultAsync<Player>(sql, new { Id = id });
         }
-        public Task<List<Player>> GetAllAsync()
+        public async Task<List<Player>> GetAllAsync()
         {
-            return Task.FromResult(_players.ToList());
+            var sql = @"SELECT * FROM Players";
+            var players = await _players.QueryAsync<Player>(sql);
+            return players.ToList();
         }
 
         public Task UpdateAsync(Player player)
         {
-            var existing = _players.FirstOrDefault(p => p.Id == player.Id);
-            if(existing != null)
-            {
-                existing.Name = player.Name;
-                existing.LastName = player.LastName;
-                existing.FideRating = player.FideRating;
-                existing.Title = player.Title;
-                existing.Nationality = player.Nationality;
-                existing.Sex = player.Sex;
-            }
-            return Task.CompletedTask;
+            var sql = @"UPDATE Players
+                SET Name = @Name, LastName = @LastName, Sex = @Sex,
+                    Nationality = @Nationality, FideRating = @FideRating, Title = @Title
+                WHERE Id = @Id";
+
+            return _players.ExecuteAsync(sql, player);
         }
 
         public Task DeleteAsync(Guid id)
         {
-            _players.RemoveAll(p => p.Id == id);
-            return Task.CompletedTask;
+            var sql = @"DELETE FROM Players WHERE Id = @Id";
+            return _players.ExecuteAsync(sql, new { Id = id });
         }
 
-        public Task<List<Player>> GetByRatingAsync(int rating)
+        public async Task<List<Player>> GetByRatingAsync(int rating)
         {
-            var result = _players.Where(p => p.FideRating >= rating).ToList();
-            return Task.FromResult(result);
+            var sql = @"SELECT * FROM Players WHERE FideRating >= @Rating";
+
+            var result = await _players.QueryAsync<Player>(sql, new { Rating = rating });
+            return result.ToList();
+
         }
     }
 }

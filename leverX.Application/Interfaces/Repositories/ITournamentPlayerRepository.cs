@@ -1,4 +1,5 @@
 ﻿using leverX.Domain.Entities;
+using leverX.DTOs.TournamentPlayers;
 
 namespace leverX.Application.Interfaces.Repositories
 {

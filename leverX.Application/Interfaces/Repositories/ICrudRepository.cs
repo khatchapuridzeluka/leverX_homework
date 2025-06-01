@@ -8,4 +8,5 @@
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(Guid id);
     }
+
 }
