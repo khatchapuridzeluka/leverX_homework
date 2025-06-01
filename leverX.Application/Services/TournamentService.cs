@@ -24,7 +24,6 @@ namespace leverX.Application.Services
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
                 Location = dto.Location,
-                Players = dto.PlayerIds.Select(id => new Player { Id = id }).ToList()
             };
             await _tournamentRepository.AddAsync(tournament);
             return DtoMapper.MapToDto(tournament);

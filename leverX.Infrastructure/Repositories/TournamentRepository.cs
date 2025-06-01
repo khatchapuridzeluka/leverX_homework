@@ -2,6 +2,7 @@
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
 using System.Data;
+
 public class TournamentRepository : ITournamentRepository
 {
     private readonly IDbConnection _dbConnection;
@@ -13,8 +14,8 @@ public class TournamentRepository : ITournamentRepository
 
     public Task AddAsync(Tournament tournament)
     {
-        var sql = @"INSERT INTO Tournaments (Id, Name, StartDate, EndDate, Location, PlayersIds)
-                    VALUES (@Id, @Name, @StartDate, @EndDate, @Location, @PlayersIds)";
+        var sql = @"INSERT INTO Tournaments (Id, Name, StartDate, EndDate, Location)
+                    VALUES (@Id, @Name, @StartDate, @EndDate, @Location)";
 
         var parameters = new
         {
@@ -22,35 +23,29 @@ public class TournamentRepository : ITournamentRepository
             tournament.Name,
             tournament.StartDate,
             tournament.EndDate,
-            tournament.Location,
-            PlayersIds = string.Join(",", tournament.Players.Select(p => p.Id))
+            tournament.Location
         };
 
         return _dbConnection.ExecuteAsync(sql, parameters);
     }
 
-    public async Task<Tournament?> GetByIdAsync(Guid id)
+    public Task<Tournament?> GetByIdAsync(Guid id)
     {
         var sql = "SELECT * FROM Tournaments WHERE Id = @Id";
-        var row = await _dbConnection.QueryFirstOrDefaultAsync<TournamentDbRow>(sql, new { Id = id });
-
-        if (row == null)
-            return null;
-
-        return MapToEntity(row);
+        return _dbConnection.QueryFirstOrDefaultAsync<Tournament>(sql, new { Id = id });
     }
 
     public async Task<List<Tournament>> GetAllAsync()
     {
         var sql = "SELECT * FROM Tournaments";
-        var rows = await _dbConnection.QueryAsync<TournamentDbRow>(sql);
-        return rows.Select(MapToEntity).ToList();
+        var rows = await _dbConnection.QueryAsync<Tournament>(sql);
+        return rows.ToList();
     }
 
     public Task UpdateAsync(Tournament tournament)
     {
         var sql = @"UPDATE Tournaments
-                    SET Name = @Name, StartDate = @StartDate, EndDate = @EndDate, Location = @Location, PlayersIds = @PlayersIds
+                    SET Name = @Name, StartDate = @StartDate, EndDate = @EndDate, Location = @Location
                     WHERE Id = @Id";
 
         var parameters = new
@@ -59,8 +54,7 @@ public class TournamentRepository : ITournamentRepository
             tournament.Name,
             tournament.StartDate,
             tournament.EndDate,
-            tournament.Location,
-            PlayersIds = string.Join(",", tournament.Players.Select(p => p.Id))
+            tournament.Location
         };
 
         return _dbConnection.ExecuteAsync(sql, parameters);
@@ -70,29 +64,5 @@ public class TournamentRepository : ITournamentRepository
     {
         var sql = "DELETE FROM Tournaments WHERE Id = @Id";
         return _dbConnection.ExecuteAsync(sql, new { Id = id });
-    }
-
-    private static Tournament MapToEntity(TournamentDbRow row)
-    {
-        return new Tournament
-        {
-            Id = row.Id,
-            Name = row.Name,
-            StartDate = row.StartDate,
-            EndDate = row.EndDate,
-            Location = row.Location,
-            Players = row.PlayersIds?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                         .Select(id => new Player { Id = Guid.Parse(id) })
-                         .ToList() ?? new List<Player>()
-        };
-    }
-    private class TournamentDbRow
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public string Location { get; set; } = string.Empty;
-        public string? PlayersIds { get; set; }
     }
 }
