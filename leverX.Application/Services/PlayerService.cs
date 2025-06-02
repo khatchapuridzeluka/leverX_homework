@@ -40,7 +40,7 @@ namespace leverX.Application.Services
             return player == null ? null : DtoMapper.MapToDto(player);
         }
 
-        public async Task<List<PlayerDto>> GetAllAsync()
+        public async Task<IEnumerable<PlayerDto>> GetAllAsync()
         {
             var players = await _playerRepository.GetAllAsync();
             return players.Select(DtoMapper.MapToDto).ToList();
@@ -68,7 +68,7 @@ namespace leverX.Application.Services
             await _playerRepository.DeleteAsync(id);
         }
 
-        public async Task<List<PlayerDto>> GetByRatingAsync(int rating)
+        public async Task<IEnumerable<PlayerDto>> GetByRatingAsync(int rating)
         {
             var players = await _playerRepository.GetByRatingAsync(rating);
             return players.Select(DtoMapper.MapToDto).ToList();

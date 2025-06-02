@@ -52,7 +52,7 @@ namespace leverX.Application.Services
             return game == null ? null : DtoMapper.MapToDto(game);
         }
 
-        public async Task<List<GameDto>> GetAllAsync()
+        public async Task<IEnumerable<GameDto>> GetAllAsync()
         {
             var games = await _gameRepository.GetAllAsync();
             return games.Select(DtoMapper.MapToDto).ToList();

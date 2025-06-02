@@ -35,7 +35,7 @@ namespace leverX.Application.Services
             return opening == null ? null : DtoMapper.MapToDto(opening);
         }
 
-        public async Task<List<OpeningDto>> GetAllAsync()
+        public async Task<IEnumerable<OpeningDto>> GetAllAsync()
         {
             var openings = await _openingRepository.GetAllAsync();
             return openings.Select(DtoMapper.MapToDto).ToList();

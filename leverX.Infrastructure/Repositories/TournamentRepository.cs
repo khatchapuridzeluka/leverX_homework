@@ -35,7 +35,7 @@ public class TournamentRepository : ITournamentRepository
         return _dbConnection.QueryFirstOrDefaultAsync<Tournament>(sql, new { Id = id });
     }
 
-    public async Task<List<Tournament>> GetAllAsync()
+    public async Task<IEnumerable<Tournament>> GetAllAsync()
     {
         var sql = "SELECT * FROM Tournaments";
         var rows = await _dbConnection.QueryAsync<Tournament>(sql);

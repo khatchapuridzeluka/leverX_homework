@@ -4,6 +4,6 @@ namespace leverX.Application.Interfaces.Repositories
 {
     public interface IPlayerRepository : ICrudRepository<Player>
     {
-        Task<List<Player>> GetByRatingAsync(int rating);
+        Task<IEnumerable<Player>> GetByRatingAsync(int rating);
     }
 }

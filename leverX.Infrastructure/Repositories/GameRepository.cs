@@ -49,7 +49,7 @@ namespace leverX.Infrastructure.Repositories
             return MapRowToGame(row);
         }
 
-        public async Task<List<Game>> GetAllAsync()
+        public async Task<IEnumerable<Game>> GetAllAsync()
         {
             var sql = "SELECT * FROM Games";
             var rows = await _games.QueryAsync<GameDbRow>(sql);

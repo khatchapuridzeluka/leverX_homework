@@ -34,7 +34,7 @@ namespace leverX.Application.Services
             return tournamentPlayer == null ? null : DtoMapper.MapToDto(tournamentPlayer);
         }
 
-        public async Task<List<TournamentPlayerDto>> GetAllAsync()
+        public async Task<IEnumerable<TournamentPlayerDto>> GetAllAsync()
         {
             var tournamentPlayers = await _tournamentPlayerRepository.GetAllAsync();
             return tournamentPlayers.Select(DtoMapper.MapToDto).ToList();

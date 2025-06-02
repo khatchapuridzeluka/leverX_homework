@@ -33,7 +33,7 @@ namespace leverX.Application.Services
             var tournament = await _tournamentRepository.GetByIdAsync(id);
             return tournament == null ? null : DtoMapper.MapToDto(tournament);
         }
-        public async Task<List<TournamentDto>> GetAllAsync()
+        public async Task<IEnumerable<TournamentDto>> GetAllAsync()
         {
             var tournaments = await _tournamentRepository.GetAllAsync();
             return tournaments.Select(DtoMapper.MapToDto).ToList();

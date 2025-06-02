@@ -25,7 +25,7 @@ namespace leverX.Infrastructure.Repositories
             var sql = @"SELECT * FROM Players WHERE Id = @Id";
             return await _players.QueryFirstOrDefaultAsync<Player>(sql, new { Id = id });
         }
-        public async Task<List<Player>> GetAllAsync()
+        public async Task<IEnumerable<Player>> GetAllAsync()
         {
             var sql = @"SELECT * FROM Players";
             var players = await _players.QueryAsync<Player>(sql);
@@ -48,7 +48,7 @@ namespace leverX.Infrastructure.Repositories
             return _players.ExecuteAsync(sql, new { Id = id });
         }
 
-        public async Task<List<Player>> GetByRatingAsync(int rating)
+        public async Task<IEnumerable<Player>> GetByRatingAsync(int rating)
         {
             var sql = @"SELECT * FROM Players WHERE FideRating >= @Rating";
 

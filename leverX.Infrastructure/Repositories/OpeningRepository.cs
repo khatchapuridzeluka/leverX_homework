@@ -44,7 +44,7 @@ namespace leverX.Infrastructure.Repositories
             };
         }
 
-        public async Task<List<Opening>> GetAllAsync()
+        public async Task<IEnumerable<Opening>> GetAllAsync()
         {
             var sql = @"SELECT * FROM Openings";
 
