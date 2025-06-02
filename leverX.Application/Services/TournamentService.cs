@@ -1,4 +1,5 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
@@ -42,9 +43,8 @@ namespace leverX.Application.Services
         {
             var tournament = await _tournamentRepository.GetByIdAsync(id);
 
-            // TODO: Create custom exception to handle 
             if (tournament == null)
-                throw new Exception("Tournament not found");
+                throw new DirectoryNotFoundException(ExceptionMessages.TournamentNotFound);
 
             tournament.Name = dto.Name;
             tournament.StartDate = dto.StartDate;

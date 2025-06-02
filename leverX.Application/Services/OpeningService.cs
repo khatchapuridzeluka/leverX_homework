@@ -1,7 +1,9 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Openings;
 
 namespace leverX.Application.Services
@@ -45,8 +47,7 @@ namespace leverX.Application.Services
         {
             var opening = await _openingRepository.GetByIdAsync(id);
             if (opening == null)
-                //TODO: CREATE THE CUSTOM EXCEPTION
-                throw new Exception("Opening not found");
+                throw new NotFoundException(ExceptionMessages.OpeningNotFound);
             opening.Name = dto.Name;
             opening.EcoCode = dto.EcoCode;
             opening.Moves = dto.Moves;

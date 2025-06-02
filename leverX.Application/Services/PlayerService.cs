@@ -1,7 +1,9 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Players;
 
 namespace leverX.Application.Services
@@ -51,8 +53,7 @@ namespace leverX.Application.Services
             var player = await _playerRepository.GetByIdAsync(id);
 
             if(player == null)
-                //TODO: CREATE A CUSTOM EXCEPTION
-                throw new Exception("Player not found");
+                throw new NotFoundException(ExceptionMessages.PlayerNotFound);
 
             player.Name = dto.Name;
             player.LastName = dto.LastName;

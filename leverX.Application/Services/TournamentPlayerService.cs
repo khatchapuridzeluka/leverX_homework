@@ -1,7 +1,9 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.TournamentPlayers;
 
 namespace leverX.Application.Services
@@ -46,8 +48,7 @@ namespace leverX.Application.Services
 
             if(tournamentPlayer == null)
             {
-                //TODO: CREATE A CUSTOM EXCEPTION
-                throw new Exception("TournamentPlayer not found");
+                throw new NotFoundException(ExceptionMessages.TournamentPlayerNotFound);
             }
 
             tournamentPlayer.FinalRank = dto.FinalRank;
