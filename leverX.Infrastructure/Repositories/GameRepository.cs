@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using leverX.Application.Helpers.Constants;
+using leverX.Domain.Exceptions;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
 using leverX.Domain.Enums;
@@ -81,13 +83,23 @@ namespace leverX.Infrastructure.Repositories
                 TournamentId = game.Tournament?.Id
             };
 
-            await _games.ExecuteAsync(sql, parameters);
+            int affectedRows = await _games.ExecuteAsync(sql, parameters);
+            if ( affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.GameNotFound);
+            }
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var sql = "DELETE FROM Games WHERE Id = @Id";
-            return _games.ExecuteAsync(sql, new { Id = id });
+
+            int affectedRows = await _games.ExecuteAsync(sql, new { Id = id });
+
+            if (affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.GameNotFound);
+            }
         }
 
         private Game MapRowToGame(GameDbRow row)

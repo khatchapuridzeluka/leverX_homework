@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using leverX.Application.Helpers.Constants;
+using leverX.Domain.Exceptions;
 using Dapper;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
@@ -32,20 +34,30 @@ namespace leverX.Infrastructure.Repositories
             return players.ToList();
         }
 
-        public Task UpdateAsync(Player player)
+        public async Task UpdateAsync(Player player)
         {
             var sql = @"UPDATE Players
                 SET Name = @Name, LastName = @LastName, Sex = @Sex,
                     Nationality = @Nationality, FideRating = @FideRating, Title = @Title
                 WHERE Id = @Id";
 
-            return _players.ExecuteAsync(sql, player);
+            int affectedRows = await _players.ExecuteAsync(sql, player);
+
+            if (affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.PlayerNotFound);
+            }
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var sql = @"DELETE FROM Players WHERE Id = @Id";
-            return _players.ExecuteAsync(sql, new { Id = id });
+            int affectedRows = await _players.ExecuteAsync(sql, new { Id = id });
+
+            if (affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.PlayerNotFound);
+            }
         }
 
         public async Task<IEnumerable<Player>> GetByRatingAsync(int rating)

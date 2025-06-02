@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using leverX.Application.Helpers.Constants;
+using leverX.Domain.Exceptions;
 using System.Text.Json;
 using Dapper;
 using leverX.Application.Interfaces.Repositories;
@@ -58,7 +60,7 @@ namespace leverX.Infrastructure.Repositories
             }).ToList();
         }
 
-        public Task UpdateAsync(Opening entity)
+        public async Task UpdateAsync(Opening entity)
         {
             var sql = @"UPDATE Openings
                         SET Name = @Name, EcoCode = @EcoCode, Moves = @Moves
@@ -70,13 +72,23 @@ namespace leverX.Infrastructure.Repositories
                 entity.EcoCode,
                 Moves = JsonSerializer.Serialize(entity.Moves)
             };
-            return _connection.ExecuteAsync(sql, parameters);
+            int affectedRows = await _connection.ExecuteAsync(sql, parameters);
+
+            if (affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.OpeningNotFound);
+            }
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var sql = "DELETE FROM Openings WHERE Id = @Id";
-            return _connection.ExecuteAsync(sql, new { Id = id });
+            int affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            if(affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.OpeningNotFound);
+            }
         }
 
         private class OpeningDbRow

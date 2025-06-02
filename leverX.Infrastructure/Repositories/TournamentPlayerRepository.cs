@@ -1,5 +1,7 @@
 ﻿using System.Data;
 using Dapper;
+using leverX.Application.Helpers.Constants;
+using leverX.Domain.Exceptions;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
 
@@ -49,7 +51,7 @@ namespace leverX.Infrastructure.Repositories
             return tournamentPlayers.AsList();
         }
 
-        public Task UpdateAsync(TournamentPlayer entity)
+        public async Task UpdateAsync(TournamentPlayer entity)
         {
             var sql = @"
                 UPDATE TournamentPlayers
@@ -62,15 +64,26 @@ namespace leverX.Infrastructure.Repositories
                 entity.TournamentId,
                 entity.PlayerId
             };
-            return _tournamentPlayers.ExecuteAsync(sql, parameters);
+            int affectedRows = await _tournamentPlayers.ExecuteAsync(sql, parameters);
+
+            if ( affectedRows == 0 )
+            {
+                throw new NotFoundException(ExceptionMessages.TournamentPlayerNotFound);
+            }
         }
 
-        public Task DeleteAsync(Guid tournamentId, Guid playerId)
+        public async Task DeleteAsync(Guid tournamentId, Guid playerId)
         {
             var sql = @"
                 DELETE FROM TournamentPlayers 
                 WHERE TournamentId = @TournamentId AND PlayerId = @PlayerId";
-            return _tournamentPlayers.ExecuteAsync(sql, new { TournamentId = tournamentId, PlayerId = playerId });
+            int affectedRows = await _tournamentPlayers.ExecuteAsync(sql, new { TournamentId = tournamentId, PlayerId = playerId });
+
+            if (affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.TournamentPlayerNotFound);
+            }
+
         }
     }
 }
