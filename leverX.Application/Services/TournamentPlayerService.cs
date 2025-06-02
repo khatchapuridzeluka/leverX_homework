@@ -1,7 +1,9 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.TournamentPlayers;
 
 namespace leverX.Application.Services
@@ -34,7 +36,7 @@ namespace leverX.Application.Services
             return tournamentPlayer == null ? null : DtoMapper.MapToDto(tournamentPlayer);
         }
 
-        public async Task<List<TournamentPlayerDto>> GetAllAsync()
+        public async Task<IEnumerable<TournamentPlayerDto>> GetAllAsync()
         {
             var tournamentPlayers = await _tournamentPlayerRepository.GetAllAsync();
             return tournamentPlayers.Select(DtoMapper.MapToDto).ToList();
@@ -46,8 +48,7 @@ namespace leverX.Application.Services
 
             if(tournamentPlayer == null)
             {
-                //TODO: CREATE A CUSTOM EXCEPTION
-                throw new Exception("TournamentPlayer not found");
+                throw new NotFoundException(ExceptionMessages.TournamentPlayerNotFound);
             }
 
             tournamentPlayer.FinalRank = dto.FinalRank;

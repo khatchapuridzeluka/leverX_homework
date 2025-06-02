@@ -4,7 +4,7 @@
     {
         Task<TDto> CreateAsync(TCreateDto dto);
         Task<TDto?> GetByIdAsync(Guid id);
-        Task<List<TDto>> GetAllAsync();
+        Task<IEnumerable<TDto>> GetAllAsync();
         Task UpdateAsync(Guid id, TUpdateDto updateDto);
         Task DeleteAsync(Guid id);
     }

@@ -1,44 +1,102 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using System.Data;
+using leverX.Application.Helpers.Constants;
+using leverX.Domain.Exceptions;
+using System.Text.Json;
+using Dapper;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
 
 namespace leverX.Infrastructure.Repositories
 {
     public class OpeningRepository : IOpeningRepository
     {
-        private readonly List<Opening> _openings = new();
-        public Task AddAsync(Opening opening)
+        private readonly IDbConnection _connection;
+
+        public OpeningRepository(IDbConnection connection)
         {
-            _openings.Add(opening);
-            return Task.CompletedTask;
+            _connection = connection;
         }
 
-        public Task<Opening?> GetByIdAsync(Guid id)
+        public Task AddAsync(Opening entity)
         {
-            return Task.FromResult(_openings.FirstOrDefault(o => o.Id == id));
-        }
-
-        public Task<List<Opening>> GetAllAsync()
-        {
-            return Task.FromResult(_openings.ToList());
-        }
-
-        public Task UpdateAsync(Opening opening)
-        {
-            var existing = _openings.FirstOrDefault(o => o.Id == opening.Id);
-            if (existing != null)
+            var sql = @"INSERT INTO Openings (Id, Name, EcoCode, Moves)
+                        VALUES (@Id, @Name, @EcoCode, @Moves)";
+            var parameters = new
             {
-                existing.Name = opening.Name;
-                existing.EcoCode = opening.EcoCode;
-                existing.Moves = opening.Moves;
-            }
-            return Task.CompletedTask;
+                entity.Id,
+                entity.Name,
+                entity.EcoCode,
+                Moves = JsonSerializer.Serialize(entity.Moves)
+            };
+            return _connection.ExecuteAsync(sql, parameters);
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task<Opening?> GetByIdAsync(Guid id)
         {
-            _openings.RemoveAll(o => o.Id == id);
-            return Task.CompletedTask;
+            var sql = @"SELECT * FROM Openings WHERE Id = @Id";
+            var row = await _connection.QueryFirstOrDefaultAsync<OpeningDbRow>(sql, new { Id = id });
+            if (row == null) return null;
+
+            return new Opening
+            {
+                Id = row.Id,
+                Name = row.Name,
+                EcoCode = row.EcoCode,
+                Moves = JsonSerializer.Deserialize<List<string>>(row.Moves) ?? new List<string>()
+            };
         }
 
+        public async Task<IEnumerable<Opening>> GetAllAsync()
+        {
+            var sql = @"SELECT * FROM Openings";
+
+            var rows = await _connection.QueryAsync<OpeningDbRow>(sql);
+            return rows.Select(row => new Opening
+            {
+                Id = row.Id,
+                Name = row.Name,
+                EcoCode = row.EcoCode,
+                Moves = JsonSerializer.Deserialize<List<string>>(row.Moves) ?? new List<string>()
+            }).ToList();
+        }
+
+        public async Task UpdateAsync(Opening entity)
+        {
+            var sql = @"UPDATE Openings
+                        SET Name = @Name, EcoCode = @EcoCode, Moves = @Moves
+                        WHERE Id = @Id";
+            var parameters = new
+            {
+                entity.Id,
+                entity.Name,
+                entity.EcoCode,
+                Moves = JsonSerializer.Serialize(entity.Moves)
+            };
+            int affectedRows = await _connection.ExecuteAsync(sql, parameters);
+
+            if (affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.OpeningNotFound);
+            }
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var sql = "DELETE FROM Openings WHERE Id = @Id";
+            int affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            if(affectedRows == 0)
+            {
+                throw new NotFoundException(ExceptionMessages.OpeningNotFound);
+            }
+        }
+
+        private class OpeningDbRow
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string EcoCode { get; set; } = string.Empty;
+            public string Moves { get; set; } = "[]";
+        }
     }
 }

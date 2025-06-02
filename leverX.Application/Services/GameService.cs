@@ -1,7 +1,9 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Games;
 
 namespace leverX.Application.Services
@@ -23,8 +25,6 @@ namespace leverX.Application.Services
 
         public async Task<GameDto> CreateAsync(CreateGameDto dto)
         {
-
-            //TODO: CREATE THE CUSTOM EXCEPTION
             var whitePlayer = await GetPlayerOrThrowAsync(dto.WhitePlayerId);
             var blackPlayer = await GetPlayerOrThrowAsync(dto.BlackPlayerId);
             var opening = await GetOpeningOrThrowAsync(dto.OpeningId);
@@ -52,7 +52,7 @@ namespace leverX.Application.Services
             return game == null ? null : DtoMapper.MapToDto(game);
         }
 
-        public async Task<List<GameDto>> GetAllAsync()
+        public async Task<IEnumerable<GameDto>> GetAllAsync()
         {
             var games = await _gameRepository.GetAllAsync();
             return games.Select(DtoMapper.MapToDto).ToList();
@@ -60,7 +60,6 @@ namespace leverX.Application.Services
 
         public async Task UpdateAsync(Guid id, UpdateGameDto dto)
         {
-            //TODO: CREATE A CUSTOM EXCEPTION
             var game = await _gameRepository.GetByIdAsync(id);
             if (game == null)
                 throw new Exception("Game not found");
@@ -88,7 +87,7 @@ namespace leverX.Application.Services
         {
             var player = await _playerRepository.GetByIdAsync(playerId);
             if (player == null)
-                throw new Exception("Player Not Found");
+                throw new NotFoundException(ExceptionMessages.PlayerNotFound);
             return player;
         }
 
@@ -96,7 +95,7 @@ namespace leverX.Application.Services
         {
             var opening = await _openingRepository.GetByIdAsync(openingId);
             if (opening == null)
-                throw new Exception("Opening not found");
+                throw new NotFoundException(ExceptionMessages.OpeningNotFound);
             return opening;
         }
 

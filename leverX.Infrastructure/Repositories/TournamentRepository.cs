@@ -1,46 +1,80 @@
-﻿using leverX.Application.Interfaces.Repositories;
+﻿using Dapper;
+using leverX.Application.Helpers.Constants;
+using leverX.Domain.Exceptions;
+using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
+using System.Data;
 
-namespace leverX.Infrastructure.Repositories
+public class TournamentRepository : ITournamentRepository
 {
-    public class TournamentRepository : ITournamentRepository
+    private readonly IDbConnection _dbConnection;
+
+    public TournamentRepository(IDbConnection dbConnection)
     {
-        private readonly List<Tournament> _tournaments = new();
-        public Task AddAsync(Tournament tournament)
+        _dbConnection = dbConnection;
+    }
+
+    public Task AddAsync(Tournament tournament)
+    {
+        var sql = @"INSERT INTO Tournaments (Id, Name, StartDate, EndDate, Location)
+                    VALUES (@Id, @Name, @StartDate, @EndDate, @Location)";
+
+        var parameters = new
         {
-            _tournaments.Add(tournament);
-            return Task.CompletedTask;
+            tournament.Id,
+            tournament.Name,
+            tournament.StartDate,
+            tournament.EndDate,
+            tournament.Location
+        };
+
+        return _dbConnection.ExecuteAsync(sql, parameters);
+    }
+
+    public Task<Tournament?> GetByIdAsync(Guid id)
+    {
+        var sql = "SELECT * FROM Tournaments WHERE Id = @Id";
+        return _dbConnection.QueryFirstOrDefaultAsync<Tournament>(sql, new { Id = id });
+    }
+
+    public async Task<IEnumerable<Tournament>> GetAllAsync()
+    {
+        var sql = "SELECT * FROM Tournaments";
+        var rows = await _dbConnection.QueryAsync<Tournament>(sql);
+        return rows.ToList();
+    }
+
+    public async Task UpdateAsync(Tournament tournament)
+    {
+        var sql = @"UPDATE Tournaments
+                    SET Name = @Name, StartDate = @StartDate, EndDate = @EndDate, Location = @Location
+                    WHERE Id = @Id";
+
+        var parameters = new
+        {
+            tournament.Id,
+            tournament.Name,
+            tournament.StartDate,
+            tournament.EndDate,
+            tournament.Location
+        };
+
+        int affectedRows = await _dbConnection.ExecuteAsync(sql, parameters);
+
+        if (affectedRows == 0)
+        {
+            throw new NotFoundException(ExceptionMessages.TournamentNotFound);
         }
-        public Task<Tournament?> GetByIdAsync(Guid id)
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var sql = "DELETE FROM Tournaments WHERE Id = @Id";
+        int affectedRows = await _dbConnection.ExecuteAsync(sql, new { Id = id });
+
+        if(affectedRows == 0)
         {
-            var tournament = _tournaments.FirstOrDefault(t => t.Id == id);
-            return Task.FromResult(tournament);
-        }
-        public Task<List<Tournament>> GetAllAsync()
-        {
-            return Task.FromResult(_tournaments);
-        }
-        public Task UpdateAsync(Tournament tournament)
-        {
-            var existingTournament = _tournaments.FirstOrDefault(t => t.Id == tournament.Id);
-            if (existingTournament != null)
-            {
-                existingTournament.Name = tournament.Name;
-                existingTournament.StartDate = tournament.StartDate;
-                existingTournament.EndDate = tournament.EndDate;
-                existingTournament.Location = tournament.Location;
-                existingTournament.Players = tournament.Players;
-            }
-            return Task.CompletedTask;
-        }
-        public Task DeleteAsync(Guid id)
-        {
-            var tournament = _tournaments.FirstOrDefault(t => t.Id == id);
-            if (tournament != null)
-            {
-                _tournaments.Remove(tournament);
-            }
-            return Task.CompletedTask;
+            throw new NotFoundException(ExceptionMessages.TournamentNotFound);
         }
     }
 }

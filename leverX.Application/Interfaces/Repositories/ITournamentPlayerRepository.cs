@@ -1,4 +1,5 @@
 ﻿using leverX.Domain.Entities;
+using leverX.DTOs.TournamentPlayers;
 
 namespace leverX.Application.Interfaces.Repositories
 {
@@ -6,7 +7,7 @@ namespace leverX.Application.Interfaces.Repositories
     {
         Task AddAsync(TournamentPlayer entity);
         Task<TournamentPlayer?> GetByIdAsync(Guid tournamentId, Guid playerId);
-        Task<List<TournamentPlayer>> GetAllAsync();
+        Task<IEnumerable<TournamentPlayer>> GetAllAsync();
         Task UpdateAsync(TournamentPlayer entity);
         Task DeleteAsync(Guid tournamentId, Guid playerId);
     }

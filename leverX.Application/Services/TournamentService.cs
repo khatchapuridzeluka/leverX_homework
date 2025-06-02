@@ -1,4 +1,5 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
@@ -24,7 +25,6 @@ namespace leverX.Application.Services
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
                 Location = dto.Location,
-                Players = dto.PlayerIds.Select(id => new Player { Id = id }).ToList()
             };
             await _tournamentRepository.AddAsync(tournament);
             return DtoMapper.MapToDto(tournament);
@@ -34,7 +34,7 @@ namespace leverX.Application.Services
             var tournament = await _tournamentRepository.GetByIdAsync(id);
             return tournament == null ? null : DtoMapper.MapToDto(tournament);
         }
-        public async Task<List<TournamentDto>> GetAllAsync()
+        public async Task<IEnumerable<TournamentDto>> GetAllAsync()
         {
             var tournaments = await _tournamentRepository.GetAllAsync();
             return tournaments.Select(DtoMapper.MapToDto).ToList();
@@ -43,9 +43,8 @@ namespace leverX.Application.Services
         {
             var tournament = await _tournamentRepository.GetByIdAsync(id);
 
-            // TODO: Create custom exception to handle 
             if (tournament == null)
-                throw new Exception("Tournament not found");
+                throw new DirectoryNotFoundException(ExceptionMessages.TournamentNotFound);
 
             tournament.Name = dto.Name;
             tournament.StartDate = dto.StartDate;

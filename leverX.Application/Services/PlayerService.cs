@@ -1,7 +1,9 @@
 ﻿using leverX.Application.Helpers;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Players;
 
 namespace leverX.Application.Services
@@ -27,9 +29,12 @@ namespace leverX.Application.Services
                 FideRating = dto.FideRating,
                 Title = dto.Title
             };
+
             await _playerRepository.AddAsync(player);
+
             return DtoMapper.MapToDto(player);
         }
+
 
         public async Task<PlayerDto?> GetByIdAsync(Guid id)
         {
@@ -37,7 +42,7 @@ namespace leverX.Application.Services
             return player == null ? null : DtoMapper.MapToDto(player);
         }
 
-        public async Task<List<PlayerDto>> GetAllAsync()
+        public async Task<IEnumerable<PlayerDto>> GetAllAsync()
         {
             var players = await _playerRepository.GetAllAsync();
             return players.Select(DtoMapper.MapToDto).ToList();
@@ -48,8 +53,7 @@ namespace leverX.Application.Services
             var player = await _playerRepository.GetByIdAsync(id);
 
             if(player == null)
-                //TODO: CREATE A CUSTOM EXCEPTION
-                throw new Exception("Player not found");
+                throw new NotFoundException(ExceptionMessages.PlayerNotFound);
 
             player.Name = dto.Name;
             player.LastName = dto.LastName;
@@ -65,7 +69,7 @@ namespace leverX.Application.Services
             await _playerRepository.DeleteAsync(id);
         }
 
-        public async Task<List<PlayerDto>> GetByRatingAsync(int rating)
+        public async Task<IEnumerable<PlayerDto>> GetByRatingAsync(int rating)
         {
             var players = await _playerRepository.GetByRatingAsync(rating);
             return players.Select(DtoMapper.MapToDto).ToList();
