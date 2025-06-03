@@ -27,6 +27,7 @@ namespace leverX.Application.Services
             _mapper = mapper;
         }
 
+        // Creates a new game asynchronously because it involves database calls to fetch related entities and save the new game.
         public async Task<GameDto> CreateAsync(CreateGameDto dto)
         {
             var whitePlayer = await GetPlayerOrThrowAsync(dto.WhitePlayerId);
@@ -47,18 +48,21 @@ namespace leverX.Application.Services
             return DtoMapper.MapToDto(game);
         }
 
+        // Involves Fetching from the database.
         public async Task<GameDto?> GetByIdAsync(Guid id)
         {
             var game = await _gameRepository.GetByIdAsync(id);
             return game == null ? null : _mapper.Map<GameDto>(game);
         }
 
+        // Fetches all the games frm the database - needs async/await to avoid blocking the thread.
         public async Task<IEnumerable<GameDto>> GetAllAsync()
         {
             var games = await _gameRepository.GetAllAsync();
             return games.Select(_mapper.Map<GameDto>).ToList();
         }
 
+        //Updates an existing game - involves fetching the game that needs async/await
         public async Task UpdateAsync(Guid id, UpdateGameDto dto)
         {
             var game = await _gameRepository.GetByIdAsync(id);
@@ -79,10 +83,13 @@ namespace leverX.Application.Services
             await _gameRepository.UpdateAsync(game);
         }
 
+        // Deletes the game by id - needs async/await to avoid blocking the thread.
         public async Task DeleteAsync(Guid id)
         {
             await _gameRepository.DeleteAsync(id);
         }
+
+        //get player by id - needs async/await to avoid blocking the thread.
         private async Task<Player> GetPlayerOrThrowAsync(Guid playerId)
         {
             var player = await _playerRepository.GetByIdAsync(playerId);
@@ -91,6 +98,7 @@ namespace leverX.Application.Services
             return player;
         }
 
+        //get opening by id - needs async/await to avoid blocking the thread.
         private async Task<Opening> GetOpeningOrThrowAsync(Guid openingId)
         {
             var opening = await _openingRepository.GetByIdAsync(openingId);
@@ -99,6 +107,7 @@ namespace leverX.Application.Services
             return opening;
         }
 
+        //get tournament by id - needs async/await to avoid blocking the thread.
         private async Task<Tournament?> GetTournamentIfExistsAsync(Guid? tournamentId)
         {
             if (tournamentId == null)

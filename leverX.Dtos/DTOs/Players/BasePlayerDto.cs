@@ -2,7 +2,7 @@
 
 namespace leverX.Dtos.DTOs.Players
 {
-    public class BasePlayerDto
+    public record BasePlayerDto
     {
         public string Name { get; set; }
         public string LastName { get; set; }

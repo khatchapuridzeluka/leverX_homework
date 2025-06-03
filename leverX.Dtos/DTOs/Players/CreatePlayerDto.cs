@@ -2,7 +2,7 @@
 
 namespace leverX.DTOs.Players
 {
-    public class CreatePlayerDto : BasePlayerDto
+    public record CreatePlayerDto : BasePlayerDto
     {
     }
 

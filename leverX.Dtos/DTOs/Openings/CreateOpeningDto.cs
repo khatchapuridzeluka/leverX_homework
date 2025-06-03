@@ -2,7 +2,7 @@
 
 namespace leverX.DTOs.Openings
 {
-    public class CreateOpeningDto : BaseOpeningDto
+    public record CreateOpeningDto : BaseOpeningDto
     {
     }
 }

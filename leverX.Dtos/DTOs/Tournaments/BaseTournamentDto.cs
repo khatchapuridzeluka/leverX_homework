@@ -1,6 +1,6 @@
 ﻿namespace leverX.Dtos.DTOs.Tournaments
 {
-    public class BaseTournamentDto
+    public record BaseTournamentDto
     {
         public string Name { get; set; }
         public DateTime StartDate { get; set; }

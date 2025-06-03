@@ -2,14 +2,14 @@
 
 namespace leverX.Dtos.DTOs.Games
 {
-    public class BaseGameDto
+    public record BaseGameDto
     {
-        public Guid WhitePlayerId { get; set; }
-        public Guid BlackPlayerId { get; set; }
-        public Result Result { get; set; }
-        public List<string> Moves { get; set; } = new();
-        public DateTime PlayedOn { get; set; }
-        public Guid OpeningId { get; set; }
-        public Guid? TournamentId { get; set; }
+        public Guid WhitePlayerId { get; init; }
+        public Guid BlackPlayerId { get; init; }
+        public Result Result { get; init; }
+        public List<string> Moves { get; init; } = new();
+        public DateTime PlayedOn { get; init; }
+        public Guid OpeningId { get; init; }
+        public Guid? TournamentId { get; init; }
     }
 }

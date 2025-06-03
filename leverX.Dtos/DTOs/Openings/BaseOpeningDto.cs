@@ -1,6 +1,6 @@
 ﻿namespace leverX.Dtos.DTOs.Openings
 {
-    public class BaseOpeningDto
+    public record BaseOpeningDto
     {
         public string Name { get; set; }
         public string EcoCode { get; set; }

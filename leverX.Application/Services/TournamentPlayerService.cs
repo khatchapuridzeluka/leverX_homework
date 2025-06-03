@@ -21,6 +21,7 @@ namespace leverX.Application.Services
             _mapper = mapper;
         }
 
+        //creates new tournamentplayer asynchronously - needs async/await to avoid blocking the thread.
         public async Task<TournamentPlayerDto> CreateAsync(CreateTournamentPlayerDto dto)
         {
             var tournamentPlayer = _mapper.Map<TournamentPlayer>(dto);
@@ -28,18 +29,21 @@ namespace leverX.Application.Services
             return _mapper.Map<TournamentPlayerDto>(tournamentPlayer);
         }
 
+        // Fetches a tournamentPlayer by ids asynchronously - needs async/await to avoid blocking the thread.
         public async Task<TournamentPlayerDto?> GetByIdAsync(Guid tournamentId, Guid playerId)
         {
             var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(tournamentId, playerId);
             return tournamentPlayer == null ? null : _mapper.Map<TournamentPlayerDto>(tournamentPlayer);
         }
 
+        // Fetches all tournamentPlayers asynchronously - needs async/await to avoid blocking the thread.
         public async Task<IEnumerable<TournamentPlayerDto>> GetAllAsync()
         {
             var tournamentPlayers = await _tournamentPlayerRepository.GetAllAsync();
             return tournamentPlayers.Select(_mapper.Map<TournamentPlayerDto>).ToList();
         }
 
+        // Updates an existing tournamentPlayer by ids asynchronously - needs async/await to avoid blocking the thread.
         public async Task UpdateAsync(Guid tournamentId, Guid playerId, UpdateTournamentPlayerDto dto)
         {
             var tournamentPlayer = await _tournamentPlayerRepository.GetByIdAsync(tournamentId, playerId);
@@ -51,6 +55,7 @@ namespace leverX.Application.Services
             await _tournamentPlayerRepository.UpdateAsync(tournamentPlayer);
         }
 
+        // Deletes a tournamentPlayer by ids asynchronously - needs async/await to avoid blocking the thread.
         public async Task DeleteAsync(Guid tournamentId, Guid playerId)
         {
             await _tournamentPlayerRepository.DeleteAsync(tournamentId, playerId);

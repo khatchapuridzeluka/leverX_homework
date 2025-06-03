@@ -2,7 +2,7 @@
 
 namespace leverX.DTOs.TournamentPlayers
 {
-    public class CreateTournamentPlayerDto : BaseTournamentPlayerDto
+    public record CreateTournamentPlayerDto : BaseTournamentPlayerDto
     {
     }
 }
