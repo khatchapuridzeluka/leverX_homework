@@ -5,7 +5,10 @@
     using System.Data;
     using Microsoft.Data.SqlClient;
     using LeverX.Application.Mappings;
-using leverX.Application.Mappings;
+    using leverX.Application.Mappings;
+    using FluentValidation.AspNetCore;
+    using FluentValidation;
+    using leverX.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,9 +30,11 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAutoMapper(typeof(TournamentProfile).Assembly); 
     builder.Services.AddAutoMapper(typeof(TournamentPlayerProfile).Assembly);
 
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddValidatorsFromAssemblyContaining<CreatePlayerDtoValidator>();
 
 
-builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+    builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
     builder.Services.AddScoped<IGameRepository, GameRepository>();
     builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
     builder.Services.AddScoped<IOpeningRepository, OpeningRepository>();
@@ -42,7 +47,7 @@ builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 
 
 
-    builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(c =>
     {
         var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

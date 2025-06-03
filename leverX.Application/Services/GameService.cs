@@ -1,4 +1,5 @@
-﻿using leverX.Application.Helpers;
+﻿using AutoMapper;
+using leverX.Application.Helpers;
 using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
@@ -14,13 +15,16 @@ namespace leverX.Application.Services
         private readonly IPlayerRepository _playerRepository;
         private readonly IOpeningRepository _openingRepository;
         private readonly ITournamentRepository _tournamentRepository;
+        private readonly IMapper _mapper;
 
-        public GameService(IGameRepository gameRepository, IPlayerRepository playerRepository, IOpeningRepository openingRepository, ITournamentRepository tournamentRepository)
+        public GameService(IGameRepository gameRepository, IPlayerRepository playerRepository, IOpeningRepository openingRepository, ITournamentRepository tournamentRepository, IMapper mapper
+            )
         {
             _gameRepository = gameRepository;
             _playerRepository = playerRepository;
             _openingRepository = openingRepository;
             _tournamentRepository = tournamentRepository;
+            _mapper = mapper;
         }
 
         public async Task<GameDto> CreateAsync(CreateGameDto dto)
@@ -30,17 +34,14 @@ namespace leverX.Application.Services
             var opening = await GetOpeningOrThrowAsync(dto.OpeningId);
             var tournament = await GetTournamentIfExistsAsync(dto.TournamentId);
 
-            var game = new Game
-            {
-                Id = Guid.NewGuid(),
-                WhitePlayer = whitePlayer,
-                BlackPlayer = blackPlayer,
-                Result = dto.Result,
-                Moves = dto.Moves,
-                PlayedOn = dto.PlayedOn,
-                Opening = opening,
-                Tournament = tournament
-            };
+            var game = _mapper.Map<Game>(dto);
+
+            game.Id = Guid.NewGuid();
+            game.WhitePlayer = whitePlayer;
+            game.BlackPlayer = blackPlayer;
+            game.Opening = opening;
+            game.Tournament = tournament;
+
 
             await _gameRepository.AddAsync(game);
             return DtoMapper.MapToDto(game);
@@ -49,33 +50,32 @@ namespace leverX.Application.Services
         public async Task<GameDto?> GetByIdAsync(Guid id)
         {
             var game = await _gameRepository.GetByIdAsync(id);
-            return game == null ? null : DtoMapper.MapToDto(game);
+            return game == null ? null : _mapper.Map<GameDto>(game);
         }
 
         public async Task<IEnumerable<GameDto>> GetAllAsync()
         {
             var games = await _gameRepository.GetAllAsync();
-            return games.Select(DtoMapper.MapToDto).ToList();
+            return games.Select(_mapper.Map<GameDto>).ToList();
         }
 
         public async Task UpdateAsync(Guid id, UpdateGameDto dto)
         {
             var game = await _gameRepository.GetByIdAsync(id);
             if (game == null)
-                throw new Exception("Game not found");
+                throw new NotFoundException(ExceptionMessages.GameNotFound);
 
             var whitePlayer = await GetPlayerOrThrowAsync(dto.WhitePlayerId);
             var blackPlayer = await GetPlayerOrThrowAsync(dto.BlackPlayerId);
             var opening = await GetOpeningOrThrowAsync(dto.OpeningId);
             var tournament = await GetTournamentIfExistsAsync(dto.TournamentId);
 
+            _mapper.Map(dto, game);
             game.WhitePlayer = whitePlayer;
             game.BlackPlayer = blackPlayer;
-            game.Result = dto.Result;
-            game.Moves = dto.Moves;
-            game.PlayedOn = dto.PlayedOn;
             game.Opening = opening;
             game.Tournament = tournament;
+
             await _gameRepository.UpdateAsync(game);
         }
 

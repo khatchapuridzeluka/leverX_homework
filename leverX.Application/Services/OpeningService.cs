@@ -1,4 +1,5 @@
-﻿using leverX.Application.Helpers;
+﻿using AutoMapper;
+using leverX.Application.Helpers;
 using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
@@ -11,36 +12,34 @@ namespace leverX.Application.Services
     public class OpeningService : IOpeningService
     {
         private readonly IOpeningRepository _openingRepository;
+        private readonly IMapper _mapper;
 
-        public OpeningService(IOpeningRepository openingRepository)
+        public OpeningService(IOpeningRepository openingRepository, IMapper mapper)
         {
             _openingRepository = openingRepository;
+            _mapper = mapper;
         }
 
         public async Task<OpeningDto> CreateAsync(CreateOpeningDto dto)
         {
-            var opening = new Opening
-            {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                EcoCode = dto.EcoCode,
-                Moves = dto.Moves
-            };
+            var opening = _mapper.Map<Opening>(dto);
+            opening.Id = Guid.NewGuid();
+
             await _openingRepository.AddAsync(opening);
 
-            return DtoMapper.MapToDto(opening);
+            return _mapper.Map<OpeningDto>(opening);
         }
 
         public async Task<OpeningDto?> GetByIdAsync(Guid id)
         {
             var opening = await _openingRepository.GetByIdAsync(id);
-            return opening == null ? null : DtoMapper.MapToDto(opening);
+            return opening == null ? null : _mapper.Map<OpeningDto>(opening);
         }
 
         public async Task<IEnumerable<OpeningDto>> GetAllAsync()
         {
             var openings = await _openingRepository.GetAllAsync();
-            return openings.Select(DtoMapper.MapToDto).ToList();
+            return _mapper.Map<IEnumerable<OpeningDto>>(openings);
         }
 
         public async Task UpdateAsync(Guid id, UpdateOpeningDto dto)
@@ -48,11 +47,9 @@ namespace leverX.Application.Services
             var opening = await _openingRepository.GetByIdAsync(id);
             if (opening == null)
                 throw new NotFoundException(ExceptionMessages.OpeningNotFound);
-            opening.Name = dto.Name;
-            opening.EcoCode = dto.EcoCode;
-            opening.Moves = dto.Moves;
-            await _openingRepository.UpdateAsync(opening);
 
+            _mapper.Map(dto, opening); 
+            await _openingRepository.UpdateAsync(opening);
         }
 
         public async Task DeleteAsync(Guid id)
