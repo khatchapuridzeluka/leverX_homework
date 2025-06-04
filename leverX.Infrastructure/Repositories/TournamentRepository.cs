@@ -14,8 +14,6 @@ public class TournamentRepository : ITournamentRepository
         _dbConnection = dbConnection;
     }
 
-    //before - return _dbConnection.ExecuteAsync(sql, parameters);
-    //after - added async/await - insert query without blocking
     public async Task AddAsync(Tournament tournament)
     {
         var sql = @"INSERT INTO Tournaments (Id, Name, StartDate, EndDate, Location)
@@ -44,7 +42,6 @@ public class TournamentRepository : ITournamentRepository
         return await _dbConnection.QueryFirstOrDefaultAsync<Tournament>(sql, new { Id = id });
     }
 
-    // Executes select query to get all tournaments without blocking
     public async Task<IEnumerable<Tournament>> GetAllAsync()
     {
         var sql = "SELECT * FROM Tournaments";
@@ -52,7 +49,6 @@ public class TournamentRepository : ITournamentRepository
         return rows.ToList();
     }
 
-    // Executes update query to update tournament without blocking
     public async Task UpdateAsync(Tournament tournament)
     {
         var sql = @"UPDATE Tournaments
@@ -76,7 +72,6 @@ public class TournamentRepository : ITournamentRepository
         }
     }
 
-    // Executes delete query to remove tournament by id without blocking
     public async Task DeleteAsync(Guid id)
     {
         var sql = "DELETE FROM Tournaments WHERE Id = @Id";

@@ -17,8 +17,7 @@ namespace leverX.Infrastructure.Repositories
             _connection = connection;
         }
 
-        //before - return _connection.ExecuteAsync(sql, parameters);
-        //after - added async/await - insert query without blocking
+
         public async Task AddAsync(Opening entity)
         {
             var sql = @"INSERT INTO Openings (Id, Name, EcoCode, Moves)
@@ -38,7 +37,6 @@ namespace leverX.Infrastructure.Repositories
             }
         }
 
-        // Executes select query to get opening by id without blocking
         public async Task<Opening?> GetByIdAsync(Guid id)
         {
             var sql = @"SELECT * FROM Openings WHERE Id = @Id";
@@ -54,7 +52,6 @@ namespace leverX.Infrastructure.Repositories
             };
         }
 
-        // Executes select query to get all openings without blocking
         public async Task<IEnumerable<Opening>> GetAllAsync()
         {
             var sql = @"SELECT * FROM Openings";
@@ -69,7 +66,6 @@ namespace leverX.Infrastructure.Repositories
             }).ToList();
         }
 
-        // Executes update query to update opening details without blocking
         public async Task UpdateAsync(Opening entity)
         {
             var sql = @"UPDATE Openings
@@ -89,7 +85,6 @@ namespace leverX.Infrastructure.Repositories
                 throw new NotFoundException(ExceptionMessages.OpeningNotFound);
             }
         }
-        // Executes delete query to remove opening by id without blocking
         public async Task DeleteAsync(Guid id)
         {
             var sql = "DELETE FROM Openings WHERE Id = @Id";

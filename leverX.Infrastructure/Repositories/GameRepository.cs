@@ -18,7 +18,6 @@ namespace leverX.Infrastructure.Repositories
             _games = games;
         }
 
-        //Executes insert query without blocking 
         public async Task AddAsync(Game game)
         {
             var sql = @"INSERT INTO Games
@@ -46,7 +45,6 @@ namespace leverX.Infrastructure.Repositories
             }
         }
 
-        //executes select query to get game by id without blocking
         public async Task<Game?> GetByIdAsync(Guid id)
         {
             var sql = "SELECT * FROM Games WHERE Id = @Id";
@@ -58,7 +56,6 @@ namespace leverX.Infrastructure.Repositories
             return MapRowToGame(row);
         }
 
-        // Executes select query to get all games without blocking
         public async Task<IEnumerable<Game>> GetAllAsync()
         {
             var sql = "SELECT * FROM Games";
@@ -67,7 +64,6 @@ namespace leverX.Infrastructure.Repositories
             return rows.Select(MapRowToGame).ToList();
         }
 
-        // Executes update query to update game details without blocking
         public async Task UpdateAsync(Game game)
         {
             var sql = @"UPDATE Games SET
@@ -99,7 +95,6 @@ namespace leverX.Infrastructure.Repositories
             }
         }
 
-        // Executes delete query to remove a game by id without blocking
         public async Task DeleteAsync(Guid id)
         {
             var sql = "DELETE FROM Games WHERE Id = @Id";

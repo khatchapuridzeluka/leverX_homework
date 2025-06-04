@@ -16,8 +16,6 @@ namespace leverX.Infrastructure.Repositories
             _tournamentPlayers = tournamentPlayers;
         }
 
-        //before - return _tournamentPlayers.ExecuteAsync(sql, parameters);
-        //after - added async/await - insert query without blocking
         public async Task AddAsync(TournamentPlayer entity)
         {
             var sql = @"
@@ -37,7 +35,6 @@ namespace leverX.Infrastructure.Repositories
             }
         }
 
-        // Executes select query to get tournament player by tournamentId and playerId without blocking
         public async Task<TournamentPlayer?> GetByIdAsync(Guid tournamentId, Guid playerId)
         {
             var sql = @"
@@ -51,7 +48,6 @@ namespace leverX.Infrastructure.Repositories
             return tp;
         }
 
-        // Executes select query to get all tournament players without blocking
         public async Task<IEnumerable<TournamentPlayer>> GetAllAsync()
         {
             var sql = "SELECT * FROM TournamentPlayer";
@@ -59,7 +55,6 @@ namespace leverX.Infrastructure.Repositories
             return tournamentPlayers.AsList();
         }
 
-        // Executes update query to update tournament player without blocking
         public async Task UpdateAsync(TournamentPlayer entity)
         {
             var sql = @"
@@ -80,7 +75,6 @@ namespace leverX.Infrastructure.Repositories
                 throw new NotFoundException(ExceptionMessages.TournamentPlayerNotFound);
             }
         }
-        // Executes delete query to remove tournament player by tournamentId and playerId without blocking
         public async Task DeleteAsync(Guid tournamentId, Guid playerId)
         {
             var sql = @"
