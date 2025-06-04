@@ -2,7 +2,7 @@
 
 namespace leverX.DTOs.Openings
 {
-    public class OpeningDto : BaseOpeningDto
+    public record OpeningDto : BaseOpeningDto
     {
         public Guid Id { get; set; }
     }

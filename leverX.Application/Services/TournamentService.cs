@@ -1,8 +1,10 @@
-﻿using leverX.Application.Helpers;
+﻿using AutoMapper;
+using leverX.Application.Helpers;
 using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Tournaments;
 
 namespace leverX.Application.Services
@@ -11,47 +13,44 @@ namespace leverX.Application.Services
     {
         private readonly ITournamentRepository _tournamentRepository;
         private readonly IPlayerRepository _playerRepository;
-        public TournamentService(ITournamentRepository tournamentRepository, IPlayerRepository playerRepository)
+        private readonly IMapper _mapper;
+        public TournamentService(ITournamentRepository tournamentRepository, IPlayerRepository playerRepository,  IMapper mapper)
         {
             _tournamentRepository = tournamentRepository;
             _playerRepository = playerRepository;
+            _mapper = mapper;
         }
+
         public async Task<TournamentDto> CreateAsync(CreateTournamentDto dto)
         {
-            var tournament = new Tournament
-            {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                Location = dto.Location,
-            };
+            var tournament = _mapper.Map<Tournament>(dto);
+
             await _tournamentRepository.AddAsync(tournament);
-            return DtoMapper.MapToDto(tournament);
+            return _mapper.Map<TournamentDto>(tournament);
         }
+
         public async Task<TournamentDto?> GetByIdAsync(Guid id)
         {
             var tournament = await _tournamentRepository.GetByIdAsync(id);
-            return tournament == null ? null : DtoMapper.MapToDto(tournament);
+            return tournament == null ? null : _mapper.Map<TournamentDto>(tournament);
         }
+
         public async Task<IEnumerable<TournamentDto>> GetAllAsync()
         {
             var tournaments = await _tournamentRepository.GetAllAsync();
-            return tournaments.Select(DtoMapper.MapToDto).ToList();
+            return tournaments.Select(_mapper.Map<TournamentDto>).ToList();
         }
+
         public async Task UpdateAsync(Guid id, UpdateTournamentDto dto)
         {
             var tournament = await _tournamentRepository.GetByIdAsync(id);
-
             if (tournament == null)
-                throw new DirectoryNotFoundException(ExceptionMessages.TournamentNotFound);
+                throw new NotFoundException(ExceptionMessages.TournamentNotFound);
 
-            tournament.Name = dto.Name;
-            tournament.StartDate = dto.StartDate;
-            tournament.EndDate = dto.EndDate;
-            tournament.Location = dto.Location;
+            _mapper.Map(dto, tournament);
             await _tournamentRepository.UpdateAsync(tournament);
         }
+
         public async Task DeleteAsync(Guid id)
         {
             await _tournamentRepository.DeleteAsync(id);

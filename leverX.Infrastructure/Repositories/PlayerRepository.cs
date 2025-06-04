@@ -15,11 +15,17 @@ namespace leverX.Infrastructure.Repositories
             _players = players;
         }
 
-        public Task AddAsync(Player player)
+        public async Task AddAsync(Player player)
         {
             var sql = @"INSERT INTO Players (Id, Name, LastName, Sex, Nationality, FideRating, Title)
                 VALUES (@Id, @Name, @LastName, @Sex, @Nationality, @FideRating, @Title)";
-            return _players.ExecuteAsync(sql, player);
+
+            int affectedRows = await _players.ExecuteAsync(sql, player);
+
+            if (affectedRows == 0)
+            {
+                throw new InsertFailedException(ExceptionMessages.InsertFailed);
+            }
         }
 
         public async Task<Player?> GetByIdAsync(Guid id)
@@ -27,6 +33,7 @@ namespace leverX.Infrastructure.Repositories
             var sql = @"SELECT * FROM Players WHERE Id = @Id";
             return await _players.QueryFirstOrDefaultAsync<Player>(sql, new { Id = id });
         }
+
         public async Task<IEnumerable<Player>> GetAllAsync()
         {
             var sql = @"SELECT * FROM Players";
@@ -48,7 +55,6 @@ namespace leverX.Infrastructure.Repositories
                 throw new NotFoundException(ExceptionMessages.PlayerNotFound);
             }
         }
-
         public async Task DeleteAsync(Guid id)
         {
             var sql = @"DELETE FROM Players WHERE Id = @Id";

@@ -1,4 +1,5 @@
-﻿using leverX.Application.Helpers;
+﻿using AutoMapper;
+using leverX.Application.Helpers;
 using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
@@ -11,24 +12,17 @@ namespace leverX.Application.Services
     public class PlayerService : IPlayerService
     {
         private readonly IPlayerRepository _playerRepository;
+        private readonly IMapper _mapper;
 
-        public PlayerService(IPlayerRepository playerRepository)
+        public PlayerService(IPlayerRepository playerRepository, IMapper mapper)
         {
             _playerRepository = playerRepository;
+            _mapper = mapper;
         }
 
         public async Task<PlayerDto> CreateAsync(CreatePlayerDto dto)
         {
-            var player = new Player
-            {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                LastName = dto.LastName,
-                Sex = dto.Sex,
-                Nationality = dto.Nationality,
-                FideRating = dto.FideRating,
-                Title = dto.Title
-            };
+            var player = _mapper.Map<Player>(dto);
 
             await _playerRepository.AddAsync(player);
 
@@ -39,13 +33,13 @@ namespace leverX.Application.Services
         public async Task<PlayerDto?> GetByIdAsync(Guid id)
         {
             var player = await _playerRepository.GetByIdAsync(id);
-            return player == null ? null : DtoMapper.MapToDto(player);
+            return player == null ? null : _mapper.Map<PlayerDto>(player);
         }
 
         public async Task<IEnumerable<PlayerDto>> GetAllAsync()
         {
             var players = await _playerRepository.GetAllAsync();
-            return players.Select(DtoMapper.MapToDto).ToList();
+            return players.Select(_mapper.Map<PlayerDto>).ToList();
         }
 
         public async Task UpdateAsync(Guid id, UpdatePlayerDto dto)
@@ -55,12 +49,8 @@ namespace leverX.Application.Services
             if(player == null)
                 throw new NotFoundException(ExceptionMessages.PlayerNotFound);
 
-            player.Name = dto.Name;
-            player.LastName = dto.LastName;
-            player.FideRating = dto.FideRating;
-            player.Title = dto.Title;
-            player.Nationality = dto.Nationality;
-            player.Sex = dto.Sex;
+            _mapper.Map(dto, player);
+            
             await _playerRepository.UpdateAsync(player);
         }
 
@@ -72,7 +62,7 @@ namespace leverX.Application.Services
         public async Task<IEnumerable<PlayerDto>> GetByRatingAsync(int rating)
         {
             var players = await _playerRepository.GetByRatingAsync(rating);
-            return players.Select(DtoMapper.MapToDto).ToList();
+            return players.Select(_mapper.Map<PlayerDto>).ToList();
         }
     }
 }

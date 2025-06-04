@@ -3,7 +3,7 @@ using leverX.Dtos.DTOs.Players;
 
 namespace leverX.DTOs.Players
 {
-    public class PlayerDto : BasePlayerDto
+    public record PlayerDto : BasePlayerDto
     {
         public Guid Id { get; set; }
         public List<Guid> GamesAsWhite { get; set; }

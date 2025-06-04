@@ -16,7 +16,7 @@ namespace leverX.Infrastructure.Repositories
             _tournamentPlayers = tournamentPlayers;
         }
 
-        public Task AddAsync(TournamentPlayer entity)
+        public async Task AddAsync(TournamentPlayer entity)
         {
             var sql = @"
                 INSERT INTO TournamentPlayers (TournamentId, PlayerId, FinalRank, Score)
@@ -28,7 +28,11 @@ namespace leverX.Infrastructure.Repositories
                 entity.FinalRank,
                 entity.Score
             };
-            return _tournamentPlayers.ExecuteAsync(sql, parameters);
+            int affectedRows = await _tournamentPlayers.ExecuteAsync(sql, parameters);
+            if (affectedRows == 0)
+            {
+                throw new InsertFailedException(ExceptionMessages.InsertFailed);
+            }
         }
 
         public async Task<TournamentPlayer?> GetByIdAsync(Guid tournamentId, Guid playerId)
@@ -71,7 +75,6 @@ namespace leverX.Infrastructure.Repositories
                 throw new NotFoundException(ExceptionMessages.TournamentPlayerNotFound);
             }
         }
-
         public async Task DeleteAsync(Guid tournamentId, Guid playerId)
         {
             var sql = @"

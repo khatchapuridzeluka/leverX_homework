@@ -2,7 +2,7 @@
 
 namespace leverX.DTOs.Games
 {
-    public class CreateGameDto : BaseGameDto
+    public record CreateGameDto : BaseGameDto
     {
     }
 }

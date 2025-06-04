@@ -14,7 +14,7 @@ public class TournamentRepository : ITournamentRepository
         _dbConnection = dbConnection;
     }
 
-    public Task AddAsync(Tournament tournament)
+    public async Task AddAsync(Tournament tournament)
     {
         var sql = @"INSERT INTO Tournaments (Id, Name, StartDate, EndDate, Location)
                     VALUES (@Id, @Name, @StartDate, @EndDate, @Location)";
@@ -28,13 +28,18 @@ public class TournamentRepository : ITournamentRepository
             tournament.Location
         };
 
-        return _dbConnection.ExecuteAsync(sql, parameters);
+        int affectedRows = await _dbConnection.ExecuteAsync(sql, parameters);
+        if(affectedRows == 0)
+        {
+            throw new InsertFailedException(ExceptionMessages.InsertFailed);
+        }
     }
 
-    public Task<Tournament?> GetByIdAsync(Guid id)
+
+    public async Task<Tournament?> GetByIdAsync(Guid id)
     {
         var sql = "SELECT * FROM Tournaments WHERE Id = @Id";
-        return _dbConnection.QueryFirstOrDefaultAsync<Tournament>(sql, new { Id = id });
+        return await _dbConnection.QueryFirstOrDefaultAsync<Tournament>(sql, new { Id = id });
     }
 
     public async Task<IEnumerable<Tournament>> GetAllAsync()

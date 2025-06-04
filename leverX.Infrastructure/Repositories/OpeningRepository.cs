@@ -17,7 +17,8 @@ namespace leverX.Infrastructure.Repositories
             _connection = connection;
         }
 
-        public Task AddAsync(Opening entity)
+
+        public async Task AddAsync(Opening entity)
         {
             var sql = @"INSERT INTO Openings (Id, Name, EcoCode, Moves)
                         VALUES (@Id, @Name, @EcoCode, @Moves)";
@@ -28,7 +29,12 @@ namespace leverX.Infrastructure.Repositories
                 entity.EcoCode,
                 Moves = JsonSerializer.Serialize(entity.Moves)
             };
-            return _connection.ExecuteAsync(sql, parameters);
+            int affectedRows = await _connection.ExecuteAsync(sql, parameters);
+
+            if(affectedRows == 0)
+            {
+                throw new InsertFailedException(ExceptionMessages.InsertFailed);
+            }
         }
 
         public async Task<Opening?> GetByIdAsync(Guid id)
@@ -79,7 +85,6 @@ namespace leverX.Infrastructure.Repositories
                 throw new NotFoundException(ExceptionMessages.OpeningNotFound);
             }
         }
-
         public async Task DeleteAsync(Guid id)
         {
             var sql = "DELETE FROM Openings WHERE Id = @Id";
