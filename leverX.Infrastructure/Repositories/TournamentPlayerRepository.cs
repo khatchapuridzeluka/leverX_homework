@@ -30,7 +30,11 @@ namespace leverX.Infrastructure.Repositories
                 entity.FinalRank,
                 entity.Score
             };
-            await _tournamentPlayers.ExecuteAsync(sql, parameters);
+            int affectedRows = await _tournamentPlayers.ExecuteAsync(sql, parameters);
+            if (affectedRows == 0)
+            {
+                throw new InsertFailedException(ExceptionMessages.InsertFailed);
+            }
         }
 
         // Executes select query to get tournament player by tournamentId and playerId without blocking

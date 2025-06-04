@@ -38,7 +38,12 @@ namespace leverX.Infrastructure.Repositories
                 TournamentId = game.Tournament?.Id
             };
 
-            await _games.ExecuteAsync(sql, parameters);
+            int affectedRows = await _games.ExecuteAsync(sql, parameters);
+
+            if( affectedRows == 0)
+            {
+                throw new InsertFailedException(ExceptionMessages.InsertFailed);
+            }
         }
 
         //executes select query to get game by id without blocking

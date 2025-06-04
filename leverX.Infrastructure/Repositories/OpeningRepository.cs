@@ -30,7 +30,12 @@ namespace leverX.Infrastructure.Repositories
                 entity.EcoCode,
                 Moves = JsonSerializer.Serialize(entity.Moves)
             };
-            await _connection.ExecuteAsync(sql, parameters);
+            int affectedRows = await _connection.ExecuteAsync(sql, parameters);
+
+            if(affectedRows == 0)
+            {
+                throw new InsertFailedException(ExceptionMessages.InsertFailed);
+            }
         }
 
         // Executes select query to get opening by id without blocking

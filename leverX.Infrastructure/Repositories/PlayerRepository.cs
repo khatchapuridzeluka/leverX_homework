@@ -21,7 +21,13 @@ namespace leverX.Infrastructure.Repositories
         {
             var sql = @"INSERT INTO Players (Id, Name, LastName, Sex, Nationality, FideRating, Title)
                 VALUES (@Id, @Name, @LastName, @Sex, @Nationality, @FideRating, @Title)";
-            await _players.ExecuteAsync(sql, player);
+
+            int affectedRows = await _players.ExecuteAsync(sql, player);
+
+            if (affectedRows == 0)
+            {
+                throw new InsertFailedException(ExceptionMessages.InsertFailed);
+            }
         }
 
         // Executes select query to get player by id without blocking

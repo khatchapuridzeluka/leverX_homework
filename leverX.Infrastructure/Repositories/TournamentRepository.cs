@@ -30,7 +30,11 @@ public class TournamentRepository : ITournamentRepository
             tournament.Location
         };
 
-        await _dbConnection.ExecuteAsync(sql, parameters);
+        int affectedRows = await _dbConnection.ExecuteAsync(sql, parameters);
+        if(affectedRows == 0)
+        {
+            throw new InsertFailedException(ExceptionMessages.InsertFailed);
+        }
     }
 
 

@@ -7,5 +7,7 @@
         public const string TournamentPlayerNotFound = "Tournament player not found";
         public const string OpeningNotFound = "Opening not found";
         public const string GameNotFound = "Game not found";
+
+        public const string InsertFailed = "Insert operation failed - no rows were affected";
     }
 }
