@@ -1,3 +1,4 @@
+
 ALTER TABLE Players 
 ADD CONSTRAINT DF_Players_Id DEFAULT NEWID() FOR Id;
 
