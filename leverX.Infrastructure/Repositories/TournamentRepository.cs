@@ -4,6 +4,7 @@ using leverX.Domain.Exceptions;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
 using System.Data;
+using System.Reflection;
 
 public class TournamentRepository : ITournamentRepository
 {
@@ -12,12 +13,15 @@ public class TournamentRepository : ITournamentRepository
     public TournamentRepository(IDbConnection dbConnection)
     {
         _dbConnection = dbConnection;
+
+
     }
 
     public async Task AddAsync(Tournament tournament)
     {
-        var sql = @"INSERT INTO Tournaments (Id, Name, StartDate, EndDate, Location)
-                    VALUES (@Id, @Name, @StartDate, @EndDate, @Location)";
+        var sql = @"INSERT INTO Tournaments (Name, StartDate, EndDate, Location)
+                        OUTPUT INSERTED.Id  
+                    VALUES (@Name, @StartDate, @EndDate, @Location)";
 
         var parameters = new
         {
@@ -27,6 +31,9 @@ public class TournamentRepository : ITournamentRepository
             tournament.EndDate,
             tournament.Location
         };
+
+        var generatedId = await _dbConnection.QuerySingleAsync<Guid>(sql, parameters);
+        tournament.Id = generatedId;
 
         int affectedRows = await _dbConnection.ExecuteAsync(sql, parameters);
         if(affectedRows == 0)

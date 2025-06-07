@@ -4,6 +4,7 @@ using leverX.Domain.Exceptions;
 using Dapper;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Domain.Entities;
+using System.Data.Common;
 namespace leverX.Infrastructure.Repositories
 {
     public class PlayerRepository : IPlayerRepository
@@ -17,8 +18,13 @@ namespace leverX.Infrastructure.Repositories
 
         public async Task AddAsync(Player player)
         {
-            var sql = @"INSERT INTO Players (Id, Name, LastName, Sex, Nationality, FideRating, Title)
-                VALUES (@Id, @Name, @LastName, @Sex, @Nationality, @FideRating, @Title)";
+            var sql = @"INSERT INTO Players (Name, LastName, Sex, Nationality, FideRating, Title)
+            OUTPUT INSERTED.Id
+            VALUES (@Name, @LastName, @Sex, @Nationality, @FideRating, @Title)";
+
+            var generatedId = await _players.QuerySingleAsync<Guid>(sql, player);
+            player.Id = generatedId;
+
 
             int affectedRows = await _players.ExecuteAsync(sql, player);
 
@@ -26,19 +32,43 @@ namespace leverX.Infrastructure.Repositories
             {
                 throw new InsertFailedException(ExceptionMessages.InsertFailed);
             }
+
         }
 
         public async Task<Player?> GetByIdAsync(Guid id)
         {
-            var sql = @"SELECT * FROM Players WHERE Id = @Id";
-            return await _players.QueryFirstOrDefaultAsync<Player>(sql, new { Id = id });
+            var sql = "SELECT Id, Name, LastName, Sex, Nationality, FideRating, Title FROM Players WHERE Id = @Id";
+            var player = await _players.QuerySingleAsync<Player>(sql, new { Id = id });
+
+            var gamesAsWhiteSql = "SELECT Id FROM Games WHERE WhitePlayerId = @PlayerId";
+            var gamesAsWhite = await _players.QueryAsync<Game>(gamesAsWhiteSql, new { PlayerId = id });
+            player.GamesAsWhite = gamesAsWhite.ToList();
+
+            var gamesAsBlackSql = "SELECT Id FROM Games WHERE BlackPlayerId = @PlayerId";
+            var gamesAsBlack = await _players.QueryAsync<Game>(gamesAsBlackSql, new { PlayerId = id });
+            player.GamesAsBlack = gamesAsBlack.ToList();
+
+            return player;
         }
 
         public async Task<IEnumerable<Player>> GetAllAsync()
         {
-            var sql = @"SELECT * FROM Players";
+            var sql = "SELECT Id, Name, LastName, Sex, Nationality, FideRating, Title FROM Players";
             var players = await _players.QueryAsync<Player>(sql);
+
+            foreach (var player in players)
+            {
+                var gamesAsWhiteSql = "SELECT Id FROM Games WHERE WhitePlayerId = @PlayerId";
+                var gamesAsWhite = await _players.QueryAsync<Game>(gamesAsWhiteSql, new { PlayerId = player.Id });
+                player.GamesAsWhite = gamesAsWhite.ToList();
+
+                var gamesAsBlackSql = "SELECT Id FROM Games WHERE BlackPlayerId = @PlayerId";
+                var gamesAsBlack = await _players.QueryAsync<Game>(gamesAsBlackSql, new { PlayerId = player.Id });
+                player.GamesAsBlack = gamesAsBlack.ToList();
+            }
+
             return players.ToList();
+
         }
 
         public async Task UpdateAsync(Player player)

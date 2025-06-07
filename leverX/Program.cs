@@ -1,20 +1,22 @@
-    using leverX.Application.Interfaces.Repositories;
-    using leverX.Application.Interfaces.Services;
-    using leverX.Infrastructure.Repositories;
-    using leverX.Application.Services;
-    using System.Data;
-    using Microsoft.Data.SqlClient;
-    using LeverX.Application.Mappings;
-    using leverX.Application.Mappings;
-    using FluentValidation.AspNetCore;
-    using FluentValidation;
-    using leverX.Application.Validators;
+using leverX.Application.Interfaces.Repositories;
+using leverX.Application.Interfaces.Services;
+using leverX.Infrastructure.Repositories;
+using leverX.Application.Services;
+using System.Data;
+using Microsoft.Data.SqlClient;
+using LeverX.Application.Mappings;
+using leverX.Application.Mappings;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using leverX.Dtos.DTOs.Players;
+using leverX.DTOs.Players;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-    // Add services to the container.
+// Add services to the container.
 
-    builder.Services.AddControllers();
+builder.Services.AddControllers();
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     builder.Services.AddOpenApi();
 
@@ -31,7 +33,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddAutoMapper(typeof(TournamentPlayerProfile).Assembly);
 
     builder.Services.AddFluentValidationAutoValidation();
-    builder.Services.AddValidatorsFromAssemblyContaining<CreatePlayerDtoValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<CreatePlayerDto.Validator>();
 
 
     builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();

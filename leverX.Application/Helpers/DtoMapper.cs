@@ -44,8 +44,9 @@ namespace leverX.Application.Helpers
         {
             TournamentId = tp.TournamentId,
             PlayerId = tp.PlayerId,
-            FinalRank = tp.FinalRank,
-            Score = tp.Score
+            Point = tp.Point,
+            FinalRank = tp.FinalRank
+
         };
 
         public static TournamentDto MapToDto(Tournament tournament) => new()

@@ -1,32 +1,28 @@
 CREATE TABLE [Players] (
-	[Id] UNIQUEIDENTIFIER PRIMARY KEY,
-	[Name] NVARCHAR(255),
-	[LastName] NVARCHAR(255),
-	[Sex] NVARCHAR(255) NOT NULL CHECK (Sex IN ('Female', 'Male')),
-	[Nationality] NVARCHAR(255) NOT NULL CHECK (
-		Nationality IN ('Unknown', 'Georgia', 'Norway', 'USA', 'Russia', 'France', 'India', 'China', 'Netherlands', 'Azerbaijan', 'Poland', 'Vietnam', 'Egypt', 'Romania', 'Uzbekistan')
-		),
-	[FideRating] INT,
-    [Title] NVARCHAR(255) NOT NULL CHECK (
-		Title IN ('None', 'WCM', 'WFM', 'WIM', 'WGM', 'CM', 'FM', 'IM', 'GM')
-	)
-)
+    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [Name] NVARCHAR(255),
+    [LastName] NVARCHAR(255),
+    [Sex] INT NOT NULL CHECK (Sex IN (0, 1)), -- 0 = Male, 1 = Female
+    [Nationality] INT NOT NULL CHECK (Nationality IN (
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+    )),
+    [FideRating] INT,
+    [Title] INT NOT NULL CHECK (Title IN (0, 1, 2, 3, 4, 5, 6, 7, 8))
+);
+
 GO
 
 CREATE TABLE [Games] (
 	[Id] UNIQUEIDENTIFIER PRIMARY KEY,
 	[WhitePlayerId] UNIQUEIDENTIFIER,
 	[BlackPlayerId] UNIQUEIDENTIFIER,
-	[Result] NVARCHAR(255) NOT NULL CHECK (
-		Result IN ('NotDefined', 'WhiteWin', 'BlackWin', 'Draw')
-	),
+	[Result] INT NOT NULL CHECK (Result IN (0, 1, 2, 3)),
 	[Moves] NVARCHAR(MAX),
 	[PlayedOn] DATETIME,
 	[OpeningId] UNIQUEIDENTIFIER,
 	[TournamentId] UNIQUEIDENTIFIER
-)
+);
 GO
-
 CREATE TABLE [Openings] (
 	[Id] UNIQUEIDENTIFIER PRIMARY KEY,
 	[Name] NVARCHAR(255),

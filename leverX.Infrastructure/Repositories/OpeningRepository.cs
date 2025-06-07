@@ -20,8 +20,9 @@ namespace leverX.Infrastructure.Repositories
 
         public async Task AddAsync(Opening entity)
         {
-            var sql = @"INSERT INTO Openings (Id, Name, EcoCode, Moves)
-                        VALUES (@Id, @Name, @EcoCode, @Moves)";
+            var sql = @"INSERT INTO Openings (Name, EcoCode, Moves)
+                       OUTPUT INSERTED.Id
+                        VALUES (@Name, @EcoCode, @Moves)";
             var parameters = new
             {
                 entity.Id,
@@ -29,6 +30,9 @@ namespace leverX.Infrastructure.Repositories
                 entity.EcoCode,
                 Moves = JsonSerializer.Serialize(entity.Moves)
             };
+            var generatedId = await _connection.QuerySingleAsync<Guid>(sql, parameters);
+            entity.Id = generatedId;
+
             int affectedRows = await _connection.ExecuteAsync(sql, parameters);
 
             if(affectedRows == 0)

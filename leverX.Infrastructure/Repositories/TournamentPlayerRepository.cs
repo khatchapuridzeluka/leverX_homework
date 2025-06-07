@@ -19,15 +19,16 @@ namespace leverX.Infrastructure.Repositories
         public async Task AddAsync(TournamentPlayer entity)
         {
             var sql = @"
-                INSERT INTO TournamentPlayers (TournamentId, PlayerId, FinalRank, Score)
-                VALUES (@TournamentId, @PlayerId, @FinalRank, @Score)";
+                INSERT INTO TournamentPlayer (TournamentId, PlayerId, Point, FinalRank)
+                VALUES (@TournamentId, @PlayerId, @Point, @FinalRank)";
             var parameters = new
             {
                 entity.TournamentId,
                 entity.PlayerId,
-                entity.FinalRank,
-                entity.Score
+                entity.Point,
+                entity.FinalRank
             };
+
             int affectedRows = await _tournamentPlayers.ExecuteAsync(sql, parameters);
             if (affectedRows == 0)
             {
@@ -64,7 +65,7 @@ namespace leverX.Infrastructure.Repositories
             var parameters = new
             {
                 entity.FinalRank,
-                entity.Score,
+                entity.Point,
                 entity.TournamentId,
                 entity.PlayerId
             };
