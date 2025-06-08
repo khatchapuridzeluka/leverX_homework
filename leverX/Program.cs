@@ -15,6 +15,7 @@ using System.Text;
 using leverX.Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -110,6 +111,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddHealthChecks()
+    .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 var app = builder.Build();
 
@@ -130,5 +133,25 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            results = report.Entries.Select(e => new {
+                key = e.Key,
+                status = e.Value.Status.ToString(),
+                description = e.Value.Description
+            })
+        });
+
+        await context.Response.WriteAsync(result);
+    }
+});
 
 app.Run();
