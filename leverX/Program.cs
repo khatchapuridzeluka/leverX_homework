@@ -16,6 +16,8 @@ using leverX.Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using System.Text.Json;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +44,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
 builder.Services.AddAuthorization();
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration) // supports appsettings.json
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+// Replace built-in logging
+builder.Host.UseSerilog();
+
 
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
@@ -143,7 +157,8 @@ app.MapHealthChecks("/health", new HealthCheckOptions
         var result = JsonSerializer.Serialize(new
         {
             status = report.Status.ToString(),
-            results = report.Entries.Select(e => new {
+            results = report.Entries.Select(e => new
+            {
                 key = e.Key,
                 status = e.Value.Status.ToString(),
                 description = e.Value.Description
@@ -154,4 +169,16 @@ app.MapHealthChecks("/health", new HealthCheckOptions
     }
 });
 
-app.Run();
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

@@ -11,9 +11,12 @@ namespace leverX.Controllers
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        private readonly ILogger<UsersController> _logger;
+
+        public UsersController(IUserService userService, ILogger<UsersController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -22,7 +25,12 @@ namespace leverX.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDto>> Login(LoginUserDto request)
         {
+            _logger.LogInformation("User attempted login: {@Username}", request.Username);
+
             var result = await _userService.LoginAsync(request);
+
+            _logger.LogInformation("User login successful: {@Username}",request.Username);
+
             return Ok(result);
         }
 
@@ -54,6 +62,7 @@ namespace leverX.Controllers
             if (!result)
                 return BadRequest("User registration failed");
 
+            _logger.LogInformation("User registered successfully: {@Username}", dto.Username);
             return Ok();
         }
 
