@@ -169,6 +169,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions
     }
 });
 
+
 try
 {
     Log.Information("Starting web host");
