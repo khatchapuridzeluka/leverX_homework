@@ -11,41 +11,69 @@ using FluentValidation;
 using leverX.Dtos.DTOs.Players;
 using leverX.DTOs.Players;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using leverX.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
 
-    builder.Services.AddScoped<IDbConnection>(sp =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        return new SqlConnection(connectionString);
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ClockSkew = TimeSpan.Zero
+        };
     });
 
-    builder.Services.AddAutoMapper(typeof(OpeningProfile).Assembly);
-    builder.Services.AddAutoMapper(typeof(GameProfile).Assembly);
-    builder.Services.AddAutoMapper(typeof(PlayerProfile).Assembly);
-    builder.Services.AddAutoMapper(typeof(TournamentProfile).Assembly); 
-    builder.Services.AddAutoMapper(typeof(TournamentPlayerProfile).Assembly);
+builder.Services.AddAuthorization();
 
-    builder.Services.AddFluentValidationAutoValidation();
-    builder.Services.AddValidatorsFromAssemblyContaining<CreatePlayerDto.Validator>();
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new SqlConnection(connectionString);
+});
+
+builder.Services.AddAutoMapper(typeof(OpeningProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(GameProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(PlayerProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(TournamentProfile).Assembly); 
+builder.Services.AddAutoMapper(typeof(TournamentPlayerProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(UserProfile).Assembly);
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreatePlayerDto.Validator>();
 
 
-    builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
-    builder.Services.AddScoped<IGameRepository, GameRepository>();
-    builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
-    builder.Services.AddScoped<IOpeningRepository, OpeningRepository>();
-    builder.Services.AddScoped<ITournamentPlayerRepository, TournamentPlayerRepository>();
-    builder.Services.AddScoped<IPlayerService, PlayerService>();
-    builder.Services.AddScoped<IGameService, GameService>();
-    builder.Services.AddScoped<ITournamentService, TournamentService>();
-    builder.Services.AddScoped<IOpeningService, OpeningService>();
-    builder.Services.AddScoped<ITournamentPlayerService, TournamentPlayerService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
+builder.Services.AddScoped<IOpeningRepository, OpeningRepository>();
+builder.Services.AddScoped<ITournamentPlayerRepository, TournamentPlayerRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<ITournamentService, TournamentService>();
+builder.Services.AddScoped<IOpeningService, OpeningService>();
+builder.Services.AddScoped<ITournamentPlayerService, TournamentPlayerService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 
@@ -56,23 +84,24 @@ builder.Services.AddSwaggerGen(c =>
         c.IncludeXmlComments(xmlPath);
     });
 
-    var app = builder.Build();
+var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI( c =>
     {
-        app.UseSwagger();
-        app.UseSwaggerUI( c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "leverX API V1");
-            c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-        });
-    }
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "leverX API V1");
+        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+    });
+}
 
-    app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-    app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
-    app.MapControllers();
+app.MapControllers();
 
-    app.Run();
+app.Run();

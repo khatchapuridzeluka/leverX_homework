@@ -5,7 +5,7 @@ namespace leverX.DTOs.Players
 {
     public record PlayerDto : BasePlayerDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
         public List<Guid> GamesAsWhite { get; set; }
         public List<Guid> GamesAsBlack { get; set; }
     }
