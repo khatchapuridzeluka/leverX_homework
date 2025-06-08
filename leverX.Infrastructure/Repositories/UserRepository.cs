@@ -61,5 +61,28 @@ namespace leverX.Infrastructure.Repositories
             var sql = "SELECT * FROM Users WHERE Username = @Username";
             return await _dbConnection.QueryFirstOrDefaultAsync<User>(sql, new { Username = username });
         }
+
+        public async Task<bool> UpdateAsync(User user)
+        {
+            var sql = @"
+        UPDATE Users
+        SET Username = @Username,
+            Email = @Email,
+            PasswordHash = @PasswordHash,
+            Role = @Role
+        WHERE Id = @Id";
+
+            var parameters = new
+            {
+                user.Id,
+                user.Username,
+                user.Email,
+                user.PasswordHash,
+                user.Role
+            };
+
+            var affectedRows = await _dbConnection.ExecuteAsync(sql, parameters);
+            return affectedRows > 0;
+        }
     }
 }

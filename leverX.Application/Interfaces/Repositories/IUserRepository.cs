@@ -10,5 +10,7 @@ namespace leverX.Application.Interfaces.Repositories
         Task<User> GetByUsername(string username);
         Task AddAsync(User user);
         Task<bool> ExistsByUsername(string username);
+
+        Task<bool> UpdateAsync(User user);
     }
 }

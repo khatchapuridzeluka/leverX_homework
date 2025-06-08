@@ -1,5 +1,6 @@
 ﻿using leverX.Application.Interfaces.Services;
 using leverX.Dtos.DTOs.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverX.Controllers
@@ -59,12 +60,24 @@ namespace leverX.Controllers
         /// <summary>
         /// Get all users
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(IEnumerable<UserDto>), 200)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllAsync();
             return Ok(users);
+        }
+
+
+        [HttpPut("{id}/role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeUserRole(Guid id, [FromBody] string newRole)
+        {
+            var success = await _userService.ChangeRoleAsync(id, newRole);
+            if (!success) return NotFound();
+
+            return NoContent();
         }
     }
 }

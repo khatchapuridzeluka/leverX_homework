@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using leverX.Application.Interfaces.Services;
 using leverX.DTOs.Players;
+using Microsoft.AspNetCore.Authorization;
 
 namespace leverX.Controllers
 {
@@ -48,6 +49,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(typeof(PlayerDto), 201)]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async  Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerDto dto)
         {
             var createdPlayer = await _playerService.CreateAsync(dto);
@@ -60,6 +62,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async  Task<ActionResult> UpdatePlayer(Guid id, UpdatePlayerDto dto)
         {
@@ -73,6 +76,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeletePlayer(Guid id)
         {
             await _playerService.DeleteAsync(id);

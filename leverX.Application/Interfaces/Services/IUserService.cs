@@ -11,5 +11,7 @@ namespace leverX.Application.Interfaces.Services
 
         Task<IEnumerable<UserDto>> GetAllAsync();
         Task<bool> UserExistsAsync(string username);
+
+        Task<bool> ChangeRoleAsync(Guid userId, string newRole);
     }
 }

@@ -1,6 +1,7 @@
 ﻿
 using leverX.Application.Interfaces.Services;
 using leverX.DTOs.Tournaments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverx.Controllers
@@ -49,6 +50,7 @@ namespace leverx.Controllers
         /// </summary>
         [ProducesResponseType(typeof(CreateTournamentDto),201)]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<TournamentDto>> CreateTournament(CreateTournamentDto dto)
         {
             var createdTournament = await _tournamentService.CreateAsync(dto);
@@ -61,6 +63,7 @@ namespace leverx.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateTournament(Guid id, UpdateTournamentDto dto)
         {
             // TODO: Catch the excpetion
@@ -71,6 +74,7 @@ namespace leverx.Controllers
         /// <summary>
         /// Delete the tournament
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(204)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteTournament(Guid id)

@@ -71,5 +71,14 @@ namespace leverX.Application.Services
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
             return userDtos;
         }
+
+        public async Task<bool> ChangeRoleAsync(Guid userId, string newRole)
+        {
+            var user = await _userRepository.GetById(userId);
+            if (user == null) return false;
+
+            user.Role = newRole;
+            return await _userRepository.UpdateAsync(user);
+        }
     }
 }
