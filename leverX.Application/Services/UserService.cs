@@ -1,8 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Formats.Tar;
+using AutoMapper;
+using leverX.Application.Helpers.Constants;
 using leverX.Application.Interfaces.Repositories;
 using leverX.Application.Interfaces.Services;
 using leverX.Domain.Entities;
+using leverX.Domain.Exceptions;
 using leverX.Dtos.DTOs.Users;
+using Microsoft.Extensions.Logging;
 
 namespace leverX.Application.Services
 {
@@ -11,12 +15,14 @@ namespace leverX.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService( IUserRepository userRepository, IMapper mapper, IJwtService jwtService)
+        public UserService( IUserRepository userRepository, IMapper mapper, IJwtService jwtService, ILogger<UserService> logger)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _jwtService = jwtService;
+            _logger = logger;
         }
 
         public async Task<bool> RegisterAsync(RegisterUserDto dto)
@@ -32,8 +38,16 @@ namespace leverX.Application.Services
                 Role = "User"
             };
 
-            await _userRepository.AddAsync(user);
-            return true;
+            try
+            {
+                await _userRepository.AddAsync(user);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while registering user: {Username}", user.Username);
+                throw new RegisterFailedException(ExceptionMessages.RegisterFailed);
+            }
         }
 
         public async Task<UserDto?> GetByIdAsync(Guid id)
@@ -46,19 +60,26 @@ namespace leverX.Application.Services
 
         public async Task<LoginResponseDto?> LoginAsync(LoginUserDto dto)
         {
-            var user = await _userRepository.GetByUsername(dto.Username);
-            if (user == null)
-                return null;
-            if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                return null;
-            var token = _jwtService.GenerateToken(user);
-
-            return new LoginResponseDto
+            try
             {
-                Token = token,
-                ExpiresAt = _jwtService.GetTokenExpiry(),
-                User = _mapper.Map<UserDto>(user)
-            };
+                var user = await _userRepository.GetByUsername(dto.Username);
+                if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+                    return null;
+
+                var token = _jwtService.GenerateToken(user);
+
+                return new LoginResponseDto
+                {
+                    Token = token,
+                    ExpiresAt = _jwtService.GetTokenExpiry(),
+                    User = _mapper.Map<UserDto>(user)
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Login failed for user: {Username}", dto.Username);
+                throw new LoginFailedException(ExceptionMessages.LoginFailed);
+            }
         }
         public async Task<bool> UserExistsAsync(string username)
         {

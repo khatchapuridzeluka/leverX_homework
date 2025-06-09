@@ -2,6 +2,7 @@
 using leverX.Application.Interfaces.Services;
 using leverX.DTOs.Players;
 using Microsoft.AspNetCore.Authorization;
+using leverX.Domain.Exceptions;
 
 namespace leverX.Controllers
 {
@@ -62,15 +63,25 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async  Task<ActionResult> UpdatePlayer(Guid id, UpdatePlayerDto dto)
+        public async Task<ActionResult> UpdatePlayer(Guid id, UpdatePlayerDto dto)
         {
-            //TODO: CATCH THE EXCEPTION
-            await _playerService.UpdateAsync(id, dto);
-            return NoContent();
+            try
+            {
+                await _playerService.UpdateAsync(id, dto);
+                return NoContent();
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new { Message = "Player not found" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
         }
-
         /// <summary>
         /// Delete the player
         /// </summary>

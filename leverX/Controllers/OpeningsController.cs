@@ -1,4 +1,5 @@
 ﻿using leverX.Application.Interfaces.Services;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Openings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,13 +61,25 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(typeof(UpdateOpeningDto), 204)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateOpening(Guid id, UpdateOpeningDto dto)
         {
-            //TODO: CATCH THE EXCEPTION
-            await _openingService.UpdateAsync(id, dto);
-            return NoContent();
+            try
+            {
+                await _openingService.UpdateAsync(id, dto);
+                return NoContent();
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+
         }
 
         /// <summary>
