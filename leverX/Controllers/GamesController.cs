@@ -1,4 +1,5 @@
 ﻿using leverX.Application.Interfaces.Services;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Games;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,12 +48,25 @@ namespace leverX.Controllers
         /// </summary>
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(GameDto), 201)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         [HttpPost]
         public async Task<ActionResult<GameDto>> CreateGame(CreateGameDto dto)
         {
-            //TODO: CATCH THE EXCEPTION
-            var createdGame = await _gameService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetGame), new { id = createdGame.Id }, createdGame);
+            try
+            {
+                var createdGame = await _gameService.CreateAsync(dto);
+                return CreatedAtAction(nameof(GetGame), new { id = createdGame.Id }, createdGame);
+            }
+            catch(NotFoundException)
+            {
+                // If any of the referenced entities (players, opening, tournament) are not found
+                return NotFound("One or more fields from player was not found");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
         }
 
         /// <summary>
@@ -64,8 +78,18 @@ namespace leverX.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<GameDto>> UpdateGame(Guid id, UpdateGameDto dto)
         {
-            //TODO: CATCH THE EXCEPTION
-            await _gameService.UpdateAsync(id, dto);
+            try {
+                await _gameService.UpdateAsync(id, dto);
+            }
+            catch(NotFoundException)
+            {
+                return NotFound();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
             return NoContent();
         }
 

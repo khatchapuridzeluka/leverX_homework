@@ -1,4 +1,5 @@
 ﻿using leverX.Application.Interfaces.Services;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.TournamentPlayers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,13 +59,24 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         [Authorize(Roles = "Admin")]
         [HttpPut("tournament/{tournamentId}/player/{playerId}")]
         public async Task<ActionResult> UpdateTournamentPlayer(Guid tournamentId, Guid playerId, UpdateTournamentPlayerDto dto)
         {
-            //TODO: CATCH THE EXCEPTION
-            await _tournamentPlayerService.UpdateAsync(tournamentId,playerId, dto);
-            return NoContent();
+            try
+            {
+                await _tournamentPlayerService.UpdateAsync(tournamentId, playerId, dto);
+                return NoContent();
+            }
+            catch(NotFoundException)
+            {
+                return NotFound();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
         }
 
         /// <summary>

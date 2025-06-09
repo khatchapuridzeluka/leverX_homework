@@ -9,5 +9,8 @@
         public const string GameNotFound = "Game not found";
 
         public const string InsertFailed = "Insert operation failed - no rows were affected";
+
+        public const string RegisterFailed = "User registration failed";
+        public const string LoginFailed = "Login failed - invalid username or password";
     }
 }

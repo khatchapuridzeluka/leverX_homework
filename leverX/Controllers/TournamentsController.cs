@@ -1,5 +1,6 @@
 ﻿
 using leverX.Application.Interfaces.Services;
+using leverX.Domain.Exceptions;
 using leverX.DTOs.Tournaments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,15 +63,25 @@ namespace leverx.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateTournament(Guid id, UpdateTournamentDto dto)
         {
-            // TODO: Catch the excpetion
-            await _tournamentService.UpdateAsync(id, dto);
-            return NoContent();
+            try
+            {
+                await _tournamentService.UpdateAsync(id, dto);
+                return NoContent();
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred.");
+            }
         }
-
         /// <summary>
         /// Delete the tournament
         /// </summary>

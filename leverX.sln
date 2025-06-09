@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "leverX.Dtos", "leverX.Dtos\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "leverX.Infrastructure", "leverX.Infrastructure\leverX.Infrastructure.csproj", "{C1170480-7EE7-43D4-84CC-4CFF994A106F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "leverX.Tests", "leverX.Tests\leverX.Tests.csproj", "{E8ACEE55-61C9-450F-AB57-0204E4BC37D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{C1170480-7EE7-43D4-84CC-4CFF994A106F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1170480-7EE7-43D4-84CC-4CFF994A106F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1170480-7EE7-43D4-84CC-4CFF994A106F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8ACEE55-61C9-450F-AB57-0204E4BC37D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8ACEE55-61C9-450F-AB57-0204E4BC37D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8ACEE55-61C9-450F-AB57-0204E4BC37D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8ACEE55-61C9-450F-AB57-0204E4BC37D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
