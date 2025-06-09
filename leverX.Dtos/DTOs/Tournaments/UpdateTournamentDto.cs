@@ -4,7 +4,7 @@ namespace leverX.DTOs.Tournaments
 {
     public record UpdateTournamentDto : BaseTournamentDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using leverX.Application.Interfaces.Services;
 using leverX.DTOs.Games;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverX.Controllers
@@ -44,6 +45,7 @@ namespace leverX.Controllers
         /// <summary>
         /// Create a new game
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(GameDto), 201)]
         [HttpPost]
         public async Task<ActionResult<GameDto>> CreateGame(CreateGameDto dto)
@@ -59,6 +61,7 @@ namespace leverX.Controllers
         [ProducesResponseType(typeof(GameDto), 204)]
         [ProducesResponseType(404)]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<GameDto>> UpdateGame(Guid id, UpdateGameDto dto)
         {
             //TODO: CATCH THE EXCEPTION
@@ -71,6 +74,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteGame(Guid id)
         {
             await _gameService.DeleteAsync(id);

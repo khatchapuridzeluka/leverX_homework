@@ -1,5 +1,6 @@
 ﻿using leverX.Application.Interfaces.Services;
 using leverX.DTOs.Openings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverX.Controllers
@@ -47,6 +48,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(typeof(OpeningDto),201)]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<OpeningDto>> CreateOpening(CreateOpeningDto dto)
         {
             var createdOpening = await _openingService.CreateAsync(dto);
@@ -59,6 +61,7 @@ namespace leverX.Controllers
         [ProducesResponseType(typeof(UpdateOpeningDto), 204)]
         [ProducesResponseType(404)]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateOpening(Guid id, UpdateOpeningDto dto)
         {
             //TODO: CATCH THE EXCEPTION
@@ -71,6 +74,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteOpening(Guid id)
         {
             await _openingService.DeleteAsync(id);

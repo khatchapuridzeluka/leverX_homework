@@ -4,6 +4,6 @@ namespace leverX.DTOs.Openings
 {
     public record UpdateOpeningDto : BaseOpeningDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
     }
 }

@@ -3,7 +3,7 @@ namespace leverX.DTOs.Games
 {
     public record UpdateGameDto : BaseGameDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
     }
 
 }

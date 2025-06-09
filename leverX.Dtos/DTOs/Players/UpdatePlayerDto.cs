@@ -5,6 +5,6 @@ namespace leverX.DTOs.Players
 {
     public record UpdatePlayerDto : BasePlayerDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
     }
 }

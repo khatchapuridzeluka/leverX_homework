@@ -21,13 +21,13 @@ namespace leverX.Infrastructure.Repositories
         public async Task AddAsync(Game game)
         {
             var sql = @"INSERT INTO Games
-                        (Id, WhitePlayerId, BlackPlayerId, Result, Moves, PlayedOn, OpeningId, TournamentId)
-                        VALUES
-                        (@Id, @WhitePlayerId, @BlackPlayerId, @Result, @Moves, @PlayedOn, @OpeningId, @TournamentId)";
+                (WhitePlayerId, BlackPlayerId, Result, Moves, PlayedOn, OpeningId, TournamentId)
+                OUTPUT INSERTED.Id
+                VALUES
+                (@WhitePlayerId, @BlackPlayerId, @Result, @Moves, @PlayedOn, @OpeningId, @TournamentId)";
 
             var parameters = new
             {
-                game.Id,
                 WhitePlayerId = game.WhitePlayer.Id,
                 BlackPlayerId = game.BlackPlayer.Id,
                 game.Result,
@@ -36,6 +36,10 @@ namespace leverX.Infrastructure.Repositories
                 OpeningId = game.Opening.Id,
                 TournamentId = game.Tournament?.Id
             };
+
+            var generatedId = await _games.QuerySingleAsync<Guid>(sql, parameters);
+            game.Id = generatedId;
+        
 
             int affectedRows = await _games.ExecuteAsync(sql, parameters);
 

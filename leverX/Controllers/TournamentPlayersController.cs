@@ -1,5 +1,6 @@
 ﻿using leverX.Application.Interfaces.Services;
 using leverX.DTOs.TournamentPlayers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace leverX.Controllers
@@ -45,6 +46,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(201)]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateTournamentPlayer(CreateTournamentPlayerDto dto)
         {
             var createdTournamentPlayer = await _tournamentPlayerService.CreateAsync(dto);
@@ -56,6 +58,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         [HttpPut("tournament/{tournamentId}/player/{playerId}")]
         public async Task<ActionResult> UpdateTournamentPlayer(Guid tournamentId, Guid playerId, UpdateTournamentPlayerDto dto)
         {
@@ -69,6 +72,7 @@ namespace leverX.Controllers
         /// </summary>
         [ProducesResponseType(204)]
         [HttpDelete("tournament/{tournamentId}/player/{playerId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteTournamentPlayer(Guid tournamentId, Guid playerId)
         {
             await _tournamentPlayerService.DeleteAsync(tournamentId, playerId);
